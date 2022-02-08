@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35f2ef64e2e2b3f409722c74132a94db, type: 3}
+  m_Name: NewTileTextureSet
+  m_EditorClassIdentifier: 
+  m_texture: {fileID: 2800000, guid: ffed33941bc80504b89ab0147d4280a8, type: 3}
+  texturePadding: 4
+  m_material: {fileID: 2100000, guid: 9678b10b75b4843429741efc34dde64f, type: 2}
+  m_textureTileWidth: 2
+  m_textureTileHeight: 2
+  m_initialTileProfile: {fileID: 11400000, guid: ab97f1cb58f7973479f8a592f980517a, type: 2}
+  m_openTileProfile: {fileID: 11400000, guid: 2af06a6a4d90568438d85074529b42de, type: 2}
+  m_otherTileProfiles:
+  - {fileID: 11400000, guid: 0dd9cde90576a0649af1bd2c6cf3634b, type: 2}
