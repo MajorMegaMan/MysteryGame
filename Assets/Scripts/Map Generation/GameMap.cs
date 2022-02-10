@@ -147,6 +147,11 @@ public class GameMap : MonoBehaviour
         }
     }
 
+    public Tile GetTile(int x, int y)
+    {
+        return m_grid.GetTile(x, y);
+    }
+
     public Tile GetTile(Vector3 worldPos)
     {
         return m_grid.GetTile(worldPos);

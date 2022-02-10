@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    [SerializeField] UnitProfile m_profile = null;
+    [SerializeField] GameManager m_gameManager = null;
+
+    UnitController m_unitController = null;
+
     Tile m_currentTile = null;
 
     Vector3 m_targetPosition = Vector3.zero;
@@ -20,7 +25,10 @@ public class Unit : MonoBehaviour
     // getters
     public bool isMoving { get { return m_isMoving; } }
     public Tile.Access tileAccess { get { return m_tileAccess; } }
-    Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
+    public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
+
+    public UnitProfile profile { get { return m_profile; } }
+    public TurnManager turnManager { get { return m_gameManager.turnManager; } }
 
     // Start is called before the first frame update
     void Start()
@@ -82,10 +90,6 @@ public class Unit : MonoBehaviour
         Tile neighbour = m_currentTile.GetNeighbour(direction);
         if(neighbour != null)
         {
-            // For now, dodgy way to get the unit to face the direction it's moving
-            Vector3 toTarget = neighbour.position - m_currentTile.position;
-            transform.forward = toTarget;
-
             EnterTile(neighbour);
         }
     }
@@ -180,5 +184,17 @@ public class Unit : MonoBehaviour
         // For now, dodgy way to get the unit to face the direction it's moving
         Vector3 assumedNeighbourOffset = m_currentTile.GetNeighbourOffset(direction);
         transform.forward = assumedNeighbourOffset;
+    }
+
+    public void SetUnitController(UnitController unitController)
+    {
+        m_unitController = unitController;
+    }
+
+    public IUnitTurnAction FindUnitTurnAction()
+    {
+        IUnitTurnAction turnAction = m_unitController.FindUnitTurnAction(this, out Tile.NeighbourDirection direction);
+        LookTowards(direction);
+        return turnAction;
     }
 }
