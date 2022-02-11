@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a9a58b3e38136b478ca46a863a59405, type: 3}
-  m_Name: TestDudeProfile
+  m_Name: SlowBotProfile
   m_EditorClassIdentifier: 
-  m_modelObjectPrefab: {fileID: 949707442740697226, guid: 591641ec596070349be62c5b968b4830, type: 3}
-  m_baseSpeed: 5
+  m_modelObjectPrefab: {fileID: 4005167630885702049, guid: a68ba5a2bcd62774c8ec293c87362f45, type: 3}
+  m_baseSpeed: 4

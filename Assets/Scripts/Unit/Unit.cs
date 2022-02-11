@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
+    // Gameplay var
     [SerializeField] UnitProfile m_profile = null;
     [SerializeField] GameManager m_gameManager = null;
 
+    // Models and animation
+    [SerializeField] GameObject m_modelGameObject = null;
+    [SerializeField] Animator m_anim = null;
+    [SerializeField, Range(0.0f, 1.0f)] float m_crossFadeTime = 0.2f;
+    float m_runAnimNormalisedTime = 0.0f;
+
+
+    // Input controller
     UnitController m_unitController = null;
 
+    // Gameplay map var
     Tile m_currentTile = null;
 
+    // Internal State machine logic
     Vector3 m_targetPosition = Vector3.zero;
     [SerializeField] float m_moveSpeed = 5.0f;
     [SerializeField] Tile.Access m_tileAccess = 0;
@@ -42,6 +53,36 @@ public class Unit : MonoBehaviour
         m_moveAction.Invoke();
     }
 
+    public void SetGameManager(GameManager gameManager)
+    {
+        m_gameManager = gameManager;
+    }
+
+    public void InitialiseProfile(UnitProfile profile)
+    {
+        m_profile = profile;
+
+        m_modelGameObject = Instantiate(profile.modelObjectPrefab, transform);
+        m_modelGameObject.GetComponent<AnimationEventRelay>().targetUnit = this;
+        m_anim = m_modelGameObject.GetComponent<Animator>();
+    }
+
+    // When a profile is attached to a unit it will also need to update that unit's mesh and material
+    public void SetProfile(UnitProfile profile)
+    {
+        m_profile = profile;
+        GameObject oldModelObject = m_modelGameObject;
+        Vector3 position = m_modelGameObject.transform.position;
+        Quaternion rotation = m_modelGameObject.transform.rotation;
+
+        // TODO:
+        // Ew gross need to pool model objects
+        Destroy(oldModelObject);
+        m_modelGameObject = Instantiate(profile.modelObjectPrefab, position, rotation, transform);
+        m_modelGameObject.GetComponent<AnimationEventRelay>().targetUnit = this;
+        m_anim = m_modelGameObject.GetComponent<Animator>();
+    }
+
     void MoveToTargetPos()
     {
         Vector3 toTarget = m_targetPosition - transform.position;
@@ -52,6 +93,11 @@ public class Unit : MonoBehaviour
             transform.position = m_targetPosition;
             m_moveAction = () => { };
             m_isMoving = false;
+
+            AnimatorStateInfo stateInfo = m_anim.GetCurrentAnimatorStateInfo(0);
+            m_runAnimNormalisedTime = stateInfo.normalizedTime;
+            m_anim.CrossFade("Idle", m_crossFadeTime);
+            //m_anim.SetTrigger("Idle");
         }
         else
         {
@@ -64,6 +110,10 @@ public class Unit : MonoBehaviour
         m_targetPosition = position;
         m_moveAction = MoveToTargetPos;
         m_isMoving = true;
+
+        m_anim.CrossFade("Run", m_crossFadeTime, 0, m_runAnimNormalisedTime);
+        
+        //m_anim.SetTrigger("Run");
     }
 
     public void SetCurrentTile(Tile target)
@@ -196,5 +246,16 @@ public class Unit : MonoBehaviour
         IUnitTurnAction turnAction = m_unitController.FindUnitTurnAction(this, out Tile.NeighbourDirection direction);
         LookTowards(direction);
         return turnAction;
+    }
+
+    public void Attack(Tile.NeighbourDirection direction)
+    {
+        m_anim.CrossFade("Attack", m_crossFadeTime);
+    }
+
+    public void EndTurnAction()
+    {
+        m_anim.CrossFade("Idle", m_crossFadeTime);
+        turnManager.EndCurrentTurn();
     }
 }

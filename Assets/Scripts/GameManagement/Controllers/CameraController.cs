@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour
@@ -17,18 +18,6 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         m_camera = GetComponent<Camera>();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        m_moveAction.Invoke();
     }
 
     void SetCamera()
@@ -54,5 +43,21 @@ public class CameraController : MonoBehaviour
     private void OnValidate()
     {
         SetFollowTarget(m_followTarget);
+    }
+
+    // update every render step to ensure that the camera is following the target
+    void FollowTarget(ScriptableRenderContext context, Camera camera)
+    {
+        m_moveAction.Invoke();
+    }
+
+    private void OnEnable()
+    {
+        RenderPipelineManager.beginCameraRendering += FollowTarget;
+    }
+
+    private void OnDisable()
+    {
+        RenderPipelineManager.beginCameraRendering -= FollowTarget;
     }
 }

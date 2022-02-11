@@ -16,7 +16,7 @@ MonoBehaviour:
   m_gridSize:
     m_width: 80
     m_height: 80
-    m_tileSize: 2
+    m_tileSize: 1
   m_tileTextureSet: {fileID: 11400000, guid: cbeb68c286e7e60448789d2b1baafc84, type: 2}
   m_roomProfiles:
   - {fileID: 11400000, guid: aefd378e64ab16a40b506452571abbc5, type: 2}

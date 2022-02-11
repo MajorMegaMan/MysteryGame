@@ -16,6 +16,7 @@ public static class TurnActions
         _allTurnActions = new IUnitTurnAction[(int)(TurnActionEnum.last) + 1];
 
         _allTurnActions[(int)TurnActionEnum.pass] = new PassTurnAction();
+        _allTurnActions[(int)TurnActionEnum.attack] = new AttackTurnAction();
         _allTurnActions[(int)TurnActionEnum.move] = new MoveTurnAction();
     }
 
@@ -28,6 +29,7 @@ public static class TurnActions
 public enum TurnActionEnum
 {
     pass,
+    attack,
     move,
 
     last = move
@@ -51,5 +53,13 @@ public class MoveTurnAction : IUnitTurnAction
 
         // immediately end turn because this was a movement Action
         unit.turnManager.EndCurrentTurn();
+    }
+}
+
+public class AttackTurnAction : IUnitTurnAction
+{
+    void IUnitTurnAction.Perform(Unit unit)
+    {
+        unit.Attack(unit.currentLookDirection);
     }
 }

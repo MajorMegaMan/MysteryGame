@@ -8,6 +8,12 @@ public class PlayerController : UnitController
     {
         // TODO: Apply checks for what buttons the player is pressing to determine the action that should be taken
         // for now only move or pass
+        if(Input.GetMouseButtonDown(0))
+        {
+            direction = unit.currentLookDirection;
+            return TurnActions.GetTurnAction(TurnActionEnum.attack);
+        }
+
 
         // test for passing turn
         if (Input.GetKey(KeyCode.Space))

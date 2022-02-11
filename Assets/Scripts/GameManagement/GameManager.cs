@@ -4,23 +4,49 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] CameraController m_cameraControl = null;
+
     [SerializeField] GameMap m_gameMap = null;
-    [SerializeField] Unit m_player = null;
+
+
+    [SerializeField] Unit m_unitPrefab = null;
+    [SerializeField] UnitProfile m_playerUnitProfile = null;
+
+    [SerializeField] int m_debugBotCount = 2;
+    [SerializeField] UnitProfile m_debugAIUnitProfile = null;
+
+    Unit m_player = null;
+    
     TurnManager m_turnManager = new TurnManager();
 
-    [SerializeField] Unit m_debugAIUnit = null;
+    Unit[] m_debugAIUnits = null;
 
     public TurnManager turnManager { get { return m_turnManager; } }
 
     private void Awake()
     {
+        m_player = InstantiateUnit(m_playerUnitProfile);
+
+        m_cameraControl.SetFollowTarget(m_player);
+
+        m_debugAIUnits = new Unit[m_debugBotCount];
+        for (int i = 0; i < m_debugBotCount; i++)
+        {
+            m_debugAIUnits[i] = InstantiateUnit(m_debugAIUnitProfile);
+        }
+
         m_turnManager.Initialise(m_player);
         CreateControllers();
 
         m_player.SetUnitController(GetUnitController(UnitControllerEnum.player));
 
-        m_debugAIUnit.SetUnitController(GetUnitController(UnitControllerEnum.debugAI));
-        m_turnManager.AddUnit(m_debugAIUnit);
+        foreach(Unit botUnit in m_debugAIUnits)
+        {
+            botUnit.SetUnitController(GetUnitController(UnitControllerEnum.debugAI));
+            m_turnManager.AddUnit(botUnit);
+        }
+
+        m_turnManager.FindTurnOrder();
     }
 
     // Start is called before the first frame update
@@ -29,22 +55,34 @@ public class GameManager : MonoBehaviour
         Tile playerTile = m_gameMap.GetTile(m_gameMap.startRoom.GetCentre());
         SetInitialTile(m_player, playerTile);
 
-        int randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
-        int randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
-        Tile botTile = m_gameMap.GetTile(randX, randY);
-        while(botTile.GetCurrentUnit() != null)
+
+        foreach (Unit botUnit in m_debugAIUnits)
         {
-            randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
-            randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
-            botTile = m_gameMap.GetTile(randX, randY);
+            int randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
+            int randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
+            Tile botTile = m_gameMap.GetTile(randX, randY);
+            while (botTile.GetCurrentUnit() != null)
+            {
+                randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
+                randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
+                botTile = m_gameMap.GetTile(randX, randY);
+            }
+            SetInitialTile(botUnit, botTile);
         }
-        SetInitialTile(m_debugAIUnit, botTile);
     }
 
     // Update is called once per frame
     void Update()
     {
         m_turnManager.Update();
+    }
+
+    public Unit InstantiateUnit(UnitProfile unitProfile)
+    {
+        Unit newUnit = Instantiate(m_unitPrefab);
+        newUnit.SetGameManager(this);
+        newUnit.InitialiseProfile(unitProfile);
+        return newUnit;
     }
 
     public void SetInitialTile(Unit unit, Tile tile)

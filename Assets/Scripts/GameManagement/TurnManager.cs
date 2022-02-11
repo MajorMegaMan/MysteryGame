@@ -27,7 +27,6 @@ public class TurnManager
 
         // Debug
         SetPlayer(player);
-        FindTurnOrder();
     }
 
     // This should be called once per frame. It Invokes the current turn action that the unit is trying to perform.
@@ -86,7 +85,7 @@ public class TurnManager
 
     // changes the turnorder based on unit's speed value.
     // Searches all units until the player is found in the turn order.
-    void FindTurnOrder()
+    public void FindTurnOrder()
     {
         // Set up lists
         m_turnOrder.Clear();
@@ -153,6 +152,7 @@ public class TurnManager
     public void AddUnit(Unit unit)
     {
         m_allUnits.Add(new UnitTurn(unit));
+        m_turnOrder.Add(unit);
     }
 
     // Need to find the unit in m_all units before removing it.
