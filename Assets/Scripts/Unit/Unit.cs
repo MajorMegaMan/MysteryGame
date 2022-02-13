@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Unit : MonoBehaviour
+public class Unit : PooledObject
 {
     // Gameplay var
     [SerializeField] UnitProfile m_profile = null;
     [SerializeField] GameManager m_gameManager = null;
 
     // Models and animation
-    [SerializeField] GameObject m_modelGameObject = null;
+    [SerializeField] ModelObject m_modelObject = null;
     [SerializeField] Animator m_anim = null;
     [SerializeField, Range(0.0f, 1.0f)] float m_crossFadeTime = 0.2f;
     float m_runAnimNormalisedTime = 0.0f;
@@ -39,6 +39,7 @@ public class Unit : MonoBehaviour
     public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
 
     public UnitProfile profile { get { return m_profile; } }
+    public ModelObject modelObject { get { return m_modelObject; } }
     public TurnManager turnManager { get { return m_gameManager.turnManager; } }
 
     // Start is called before the first frame update
@@ -58,29 +59,20 @@ public class Unit : MonoBehaviour
         m_gameManager = gameManager;
     }
 
-    public void InitialiseProfile(UnitProfile profile)
+    public void InitialiseProfile(UnitProfile profile, ModelObject modelObject)
     {
         m_profile = profile;
 
-        m_modelGameObject = Instantiate(profile.modelObjectPrefab, transform);
-        m_modelGameObject.GetComponent<AnimationEventRelay>().targetUnit = this;
-        m_anim = m_modelGameObject.GetComponent<Animator>();
+        modelObject.SetCurrentUnit(this);
+
+        m_modelObject = modelObject;
+        m_anim = m_modelObject.GetComponent<Animator>();
     }
 
     // When a profile is attached to a unit it will also need to update that unit's mesh and material
-    public void SetProfile(UnitProfile profile)
+    public void SetProfile(UnitProfile profile, ModelObject modelObject)
     {
-        m_profile = profile;
-        GameObject oldModelObject = m_modelGameObject;
-        Vector3 position = m_modelGameObject.transform.position;
-        Quaternion rotation = m_modelGameObject.transform.rotation;
-
-        // TODO:
-        // Ew gross need to pool model objects
-        Destroy(oldModelObject);
-        m_modelGameObject = Instantiate(profile.modelObjectPrefab, position, rotation, transform);
-        m_modelGameObject.GetComponent<AnimationEventRelay>().targetUnit = this;
-        m_anim = m_modelGameObject.GetComponent<Animator>();
+        InitialiseProfile(profile, modelObject);
     }
 
     void MoveToTargetPos()

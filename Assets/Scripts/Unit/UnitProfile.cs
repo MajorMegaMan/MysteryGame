@@ -5,11 +5,11 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "newUnitProfile", menuName = "Unit Profile")]
 public class UnitProfile : ScriptableObject
 {
-    [SerializeField] GameObject m_modelObjectPrefab = null;
+    [SerializeField] ModelObject m_modelObjectPrefab = null;
 
-    [SerializeField] float m_baseSpeed = 5.0f;
+    [SerializeField] UnitStats m_baseStats = UnitStats.basic;
 
     // getters
-    public float baseSpeed { get { return m_baseSpeed; } }
-    public GameObject modelObjectPrefab { get { return m_modelObjectPrefab; } }
+    public float baseSpeed { get { return m_baseStats.speed; } }
+    public ModelObject modelObjectPrefab { get { return m_modelObjectPrefab; } }
 }

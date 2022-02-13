@@ -12,5 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a9a58b3e38136b478ca46a863a59405, type: 3}
   m_Name: SlowBotProfile
   m_EditorClassIdentifier: 
-  m_modelObjectPrefab: {fileID: 4005167630885702049, guid: a68ba5a2bcd62774c8ec293c87362f45, type: 3}
-  m_baseSpeed: 4
+  m_modelObjectPrefab: {fileID: -1623533775256125595, guid: a68ba5a2bcd62774c8ec293c87362f45, type: 3}
+  m_baseStats:
+    health: 20
+    strength: 5
+    speed: 4

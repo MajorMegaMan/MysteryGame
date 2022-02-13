@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] GameMap m_gameMap = null;
 
+    UnitManager m_unitManager;
+    UnitProfile[] m_unitProfiles = null;
 
     [SerializeField] Unit m_unitPrefab = null;
     [SerializeField] UnitProfile m_playerUnitProfile = null;
@@ -25,14 +27,18 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        m_player = InstantiateUnit(m_playerUnitProfile);
+        m_unitProfiles = new UnitProfile[2];
+        m_unitProfiles[0] = m_playerUnitProfile;
+        m_unitProfiles[1] = m_debugAIUnitProfile;
+        m_unitManager = new UnitManager(this, m_unitPrefab, 5, m_unitProfiles, 3, null, null);
+        m_player = m_unitManager.SpawnUnit(m_playerUnitProfile);
 
         m_cameraControl.SetFollowTarget(m_player);
 
         m_debugAIUnits = new Unit[m_debugBotCount];
         for (int i = 0; i < m_debugBotCount; i++)
         {
-            m_debugAIUnits[i] = InstantiateUnit(m_debugAIUnitProfile);
+            m_debugAIUnits[i] = m_unitManager.SpawnUnit(m_debugAIUnitProfile);
         }
 
         m_turnManager.Initialise(m_player);
@@ -75,14 +81,6 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         m_turnManager.Update();
-    }
-
-    public Unit InstantiateUnit(UnitProfile unitProfile)
-    {
-        Unit newUnit = Instantiate(m_unitPrefab);
-        newUnit.SetGameManager(this);
-        newUnit.InitialiseProfile(unitProfile);
-        return newUnit;
     }
 
     public void SetInitialTile(Unit unit, Tile tile)
