@@ -10,10 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a9a58b3e38136b478ca46a863a59405, type: 3}
-  m_Name: SlowBotProfile
+  m_Name: FastDudeProfile
   m_EditorClassIdentifier: 
   m_modelObjectPrefab: {fileID: -1623533775256125595, guid: a68ba5a2bcd62774c8ec293c87362f45, type: 3}
   m_baseStats:
     health: 20
     strength: 5
-    speed: 4
+    speed: 10
+  m_statGrowth:
+    health: 10
+    strength: 2
+    speed: 0.1

@@ -7,6 +7,7 @@ public class Unit : PooledObject
     // Gameplay var
     [SerializeField] UnitProfile m_profile = null;
     [SerializeField] GameManager m_gameManager = null;
+    UsableUnitStats m_usableStats;
 
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
@@ -35,12 +36,15 @@ public class Unit : PooledObject
 
     // getters
     public bool isMoving { get { return m_isMoving; } }
+    public Tile currentTile { get { return m_currentTile; } }
     public Tile.Access tileAccess { get { return m_tileAccess; } }
     public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
 
     public UnitProfile profile { get { return m_profile; } }
     public ModelObject modelObject { get { return m_modelObject; } }
     public TurnManager turnManager { get { return m_gameManager.turnManager; } }
+    public UnitManager unitManager { get { return m_gameManager.unitManager; } }
+    public UsableUnitStats usableStats { get { return m_usableStats; } }
 
     // Start is called before the first frame update
     void Start()
@@ -59,7 +63,8 @@ public class Unit : PooledObject
         m_gameManager = gameManager;
     }
 
-    public void InitialiseProfile(UnitProfile profile, ModelObject modelObject)
+    // When a profile is attached to a unit it will also need to update that unit's mesh and material
+    public void SetProfile(UnitProfile profile, ModelObject modelObject)
     {
         m_profile = profile;
 
@@ -67,12 +72,9 @@ public class Unit : PooledObject
 
         m_modelObject = modelObject;
         m_anim = m_modelObject.GetComponent<Animator>();
-    }
 
-    // When a profile is attached to a unit it will also need to update that unit's mesh and material
-    public void SetProfile(UnitProfile profile, ModelObject modelObject)
-    {
-        InitialiseProfile(profile, modelObject);
+        // grab the stats from the profile. Will need to know if it should load stats or generate them, but for now, just generate
+        m_usableStats = UsableUnitStats.GenerateOnUnit(this, profile, 1);
     }
 
     void MoveToTargetPos()
@@ -114,14 +116,19 @@ public class Unit : PooledObject
         SetPosition(target.position);
     }
 
-    public Tile GetCurrentTile()
-    {
-        return m_currentTile;
-    }
-
     public void EnterTile(Tile target)
     {
         m_currentTile.SetCurrentUnit(null);
+        SetCurrentTile(target);
+        m_currentTile.SetCurrentUnit(this);
+    }
+
+    public void SafeEnterTile(Tile target)
+    {
+        if(m_currentTile != null)
+        {
+            m_currentTile.SetCurrentUnit(null);
+        }
         SetCurrentTile(target);
         m_currentTile.SetCurrentUnit(this);
     }
@@ -243,11 +250,33 @@ public class Unit : PooledObject
     public void Attack(Tile.NeighbourDirection direction)
     {
         m_anim.CrossFade("Attack", m_crossFadeTime);
+        Tile targetTile = m_currentTile.GetNeighbour(direction);
+        if(targetTile != null)
+        {
+            Unit targetUnit = targetTile.GetCurrentUnit();
+            if(targetUnit != null)
+            {
+                targetUnit.m_usableStats.ReceiveDamage(m_usableStats.CalcAttackDamage());
+            }
+        }
     }
 
     public void EndTurnAction()
     {
         m_anim.CrossFade("Idle", m_crossFadeTime);
         turnManager.EndCurrentTurn();
+    }
+
+    public void Die()
+    {
+        // remove from turn manager
+        turnManager.RemoveUnit(this);
+
+        // It would be ideal to play a death animation first, but for now just despawn the unit
+        // play animation
+        //m_anim.CrossFade("Death", m_crossFadeTime);
+
+        // clean up corpse
+        unitManager.DespawnUnit(this);
     }
 }

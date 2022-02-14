@@ -16,14 +16,19 @@ public class UnitManager
     Unit m_unitPrefab = null;
     GameObjectPool<Unit> m_unitPool;
 
-    UnitProfile[] m_unitProfiles = null;
+    Dictionary<UnitProfileKey, UnitProfile> m_unitProfileDictionary = null;
+    Dictionary<UnitProfileKey, GameObjectPool<ModelObject>> m_unitProfileModelDictionary = null;
 
-    // This is dumb that I'm using a class as a kye value. 
-    // I would like to use an enum or something. BUT, specifically an enum would require knowing all the actual profiles.
-    // Currently, while debugging and creating the system. I don't know what the profiles will be.
-    Dictionary<UnitProfile, GameObjectPool<ModelObject>> m_unitProfileModelDictionary;
+    List<Unit> m_activeUnits = null;
 
-    public UnitManager(GameManager gameManager, Unit unitPrefab, int unitPoolCount, UnitProfile[] unitProfiles, int initialUnitModelcount, Transform unitContainer, Transform modelContainer)
+    public Unit[] activeUnits { get { return m_activeUnits.ToArray(); } }
+
+    public UnitManager(GameManager gameManager, Unit unitPrefab, int unitPoolCount, SerialisedKeyValue<UnitProfileKey, UnitProfile>[] unitProfiles, int initialUnitModelcount, Transform unitContainer, Transform modelContainer)
+    {
+        Init(gameManager, unitPrefab, unitPoolCount, unitProfiles, initialUnitModelcount, unitContainer, modelContainer);
+    }
+
+    void Init(GameManager gameManager, Unit unitPrefab, int unitPoolCount, SerialisedKeyValue<UnitProfileKey, UnitProfile>[] unitProfiles, int initialUnitModelcount, Transform unitContainer, Transform modelContainer)
     {
         m_gameManager = gameManager;
         m_unitContainer = unitContainer;
@@ -32,14 +37,21 @@ public class UnitManager
         m_unitPrefab = unitPrefab;
 
         m_unitPool = new GameObjectPool<Unit>(m_unitPrefab, unitPoolCount, InstantiateUnit, DestroyUnit);
-        
-        m_unitProfiles = unitProfiles;
-        m_unitProfileModelDictionary = new Dictionary<UnitProfile, GameObjectPool<ModelObject>>();
-        for(int i = 0; i < m_unitProfiles.Length; i++)
+
+        m_unitProfileDictionary = new Dictionary<UnitProfileKey, UnitProfile>();
+        foreach (var unitProfile in unitProfiles)
         {
-            var unitModelPool = new GameObjectPool<ModelObject>(m_unitProfiles[i].modelObjectPrefab, initialUnitModelcount, InstantiateModel, DestroyModel);
-            m_unitProfileModelDictionary[m_unitProfiles[i]] = unitModelPool;
+            m_unitProfileDictionary.Add(unitProfile.key, unitProfile.value);
         }
+
+        m_unitProfileModelDictionary = new Dictionary<UnitProfileKey, GameObjectPool<ModelObject>>();
+        foreach (var pair in m_unitProfileDictionary)
+        {
+            var profile = pair.Value;
+            m_unitProfileModelDictionary[pair.Key] = new GameObjectPool<ModelObject>(profile.modelObjectPrefab, initialUnitModelcount, InstantiateModel, DestroyModel);
+        }
+
+        m_activeUnits = new List<Unit>(unitPoolCount);
     }
 
     Unit InstantiateUnit(Unit prefab)
@@ -65,30 +77,38 @@ public class UnitManager
         Object.Destroy(targetModel.gameObject);
     }
 
-    public Unit SpawnUnit(UnitProfile unitProfile)
+    public Unit SpawnUnit(UnitProfileKey unitProfileKey)
     {
         Unit unit = m_unitPool.ActivateObject();
+        ModelObject modelObject = GetModelObject(unitProfileKey);
 
-        ModelObject modelObject = GetModelObject(unitProfile);
+        unit.SetProfile(m_unitProfileDictionary[unitProfileKey], modelObject);
 
-        unit.SetProfile(unitProfile, modelObject);
+        m_activeUnits.Add(unit);
 
         return unit;
     }
 
     public void DespawnUnit(Unit unit)
     {
+        unit.currentTile.SetCurrentUnit(null);
+        //unit.SetCurrentTile(null);
         unit.modelObject.DetachCurrentUnit(m_modelContainer);
         m_unitPool.DeactivateObject(unit);
+
+        m_activeUnits.Remove(unit);
     }
 
-    ModelObject GetModelObject(UnitProfile unitProfile)
+    ModelObject GetModelObject(UnitProfileKey unitProfileKey)
     {
-        var modelPool = m_unitProfileModelDictionary[unitProfile];
+        var modelPool = m_unitProfileModelDictionary[unitProfileKey];
         ModelObject modelObject = modelPool.ActivateObject();
+
+        // if there was no model object found, expand the pool to find one.
+        // Limits of units will be maintained elsewhere and there should always be an available model.
         if(modelObject == null)
         {
-            modelPool.ExpandPool(unitProfile.modelObjectPrefab, 1);
+            modelPool.ExpandPool(m_unitProfileDictionary[unitProfileKey].modelObjectPrefab, 1);
             modelObject = modelPool.ActivateObject();
         }
         return modelObject;

@@ -4,65 +4,56 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Control Stuff")]
     [SerializeField] CameraController m_cameraControl = null;
-
     [SerializeField] GameMap m_gameMap = null;
 
+    // managers
     UnitManager m_unitManager;
-    UnitProfile[] m_unitProfiles = null;
+    TurnManager m_turnManager;
+    [SerializeField] Transform m_unitContainer = null;
+    [SerializeField] Transform m_modelContainer = null;
 
+    [Header("Unit Stuff")]
     [SerializeField] Unit m_unitPrefab = null;
-    [SerializeField] UnitProfile m_playerUnitProfile = null;
+    [SerializeField] SerialisedKeyValue<UnitProfileKey, UnitProfile>[] m_unitProfiles = null;
+    [SerializeField] int m_unitPoolCount = 5;
+    [SerializeField] int m_initalmodelsPoolCount = 3;
 
-    [SerializeField] int m_debugBotCount = 2;
-    [SerializeField] UnitProfile m_debugAIUnitProfile = null;
-
+    // Unit references
     Unit m_player = null;
-    
-    TurnManager m_turnManager = new TurnManager();
 
+    [Header("Debug Stuff")]
+    [SerializeField] int m_debugBotCount = 2;
     Unit[] m_debugAIUnits = null;
 
+    // getters
     public TurnManager turnManager { get { return m_turnManager; } }
+    public UnitManager unitManager { get { return m_unitManager; } }
+
+    public enum UnitControllerEnum
+    {
+        player,
+        debugAI
+    }
 
     private void Awake()
     {
-        m_unitProfiles = new UnitProfile[2];
-        m_unitProfiles[0] = m_playerUnitProfile;
-        m_unitProfiles[1] = m_debugAIUnitProfile;
-        m_unitManager = new UnitManager(this, m_unitPrefab, 5, m_unitProfiles, 3, null, null);
-        m_player = m_unitManager.SpawnUnit(m_playerUnitProfile);
-
-        m_cameraControl.SetFollowTarget(m_player);
-
-        m_debugAIUnits = new Unit[m_debugBotCount];
-        for (int i = 0; i < m_debugBotCount; i++)
-        {
-            m_debugAIUnits[i] = m_unitManager.SpawnUnit(m_debugAIUnitProfile);
-        }
-
-        m_turnManager.Initialise(m_player);
+        // Initialise unitManager
+        m_unitManager = new UnitManager(this, m_unitPrefab, m_unitPoolCount, m_unitProfiles, m_initalmodelsPoolCount, m_unitContainer, m_modelContainer);
+        m_turnManager = new TurnManager();
         CreateControllers();
-
-        m_player.SetUnitController(GetUnitController(UnitControllerEnum.player));
-
-        foreach(Unit botUnit in m_debugAIUnits)
-        {
-            botUnit.SetUnitController(GetUnitController(UnitControllerEnum.debugAI));
-            m_turnManager.AddUnit(botUnit);
-        }
-
-        m_turnManager.FindTurnOrder();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        // Spawn units
         Tile playerTile = m_gameMap.GetTile(m_gameMap.startRoom.GetCentre());
-        SetInitialTile(m_player, playerTile);
+        m_player = SpawnUnit(UnitProfileKey.debugPlayer, UnitControllerEnum.player, playerTile);
 
-
-        foreach (Unit botUnit in m_debugAIUnits)
+        m_debugAIUnits = new Unit[m_debugBotCount];
+        for (int i = 0; i < m_debugBotCount; i++)
         {
             int randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
             int randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
@@ -73,8 +64,20 @@ public class GameManager : MonoBehaviour
                 randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
                 botTile = m_gameMap.GetTile(randX, randY);
             }
-            SetInitialTile(botUnit, botTile);
+
+            m_debugAIUnits[i] = SpawnUnit(UnitProfileKey.debugBot, UnitControllerEnum.debugAI, botTile);
         }
+
+        m_cameraControl.SetFollowTarget(m_player);
+
+        // Setup Turn Manager
+        foreach (Unit unit in m_unitManager.activeUnits)
+        {
+            m_turnManager.AddUnit(unit);
+        }
+        m_turnManager.SetPlayer(m_player);
+
+        m_turnManager.FindTurnOrder();
     }
 
     // Update is called once per frame
@@ -85,15 +88,8 @@ public class GameManager : MonoBehaviour
 
     public void SetInitialTile(Unit unit, Tile tile)
     {
-        unit.SetCurrentTile(tile);
+        unit.SafeEnterTile(tile);
         unit.transform.position = tile.position;
-        tile.SetCurrentUnit(unit);
-    }
-
-    public enum UnitControllerEnum
-    {
-        player,
-        debugAI
     }
 
     void CreateControllers()
@@ -106,5 +102,15 @@ public class GameManager : MonoBehaviour
     UnitController GetUnitController(UnitControllerEnum controllerEnum)
     {
         return UnitController.GetUnitController((int)controllerEnum);
+    }
+
+    public Unit SpawnUnit(UnitProfileKey unitProfileKey, UnitControllerEnum controllerEnum, Tile tile)
+    {
+        Unit unit = m_unitManager.SpawnUnit(unitProfileKey);
+        unit.SetUnitController(GetUnitController(controllerEnum));
+
+        SetInitialTile(unit, tile);
+
+        return unit;
     }
 }

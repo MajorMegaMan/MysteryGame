@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 35f2ef64e2e2b3f409722c74132a94db, type: 3}
-  m_Name: NewTileTextureSet
+  m_Name: DebugTileTextureSet
   m_EditorClassIdentifier: 
   m_texture: {fileID: 2800000, guid: ffed33941bc80504b89ab0147d4280a8, type: 3}
-  texturePadding: 4
   m_material: {fileID: 2100000, guid: 9678b10b75b4843429741efc34dde64f, type: 2}
   m_textureTileWidth: 2
   m_textureTileHeight: 2

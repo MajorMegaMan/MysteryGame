@@ -254,6 +254,36 @@ MonoBehaviour:
   m_followTarget: {fileID: 0}
   m_camOffset: {x: 0, y: 0, z: 0}
   m_camDistance: 5
+--- !u!1 &975416771
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975416772}
+  m_Layer: 0
+  m_Name: Model Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &975416772
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975416771}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1638938550}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1017305342
 GameObject:
   m_ObjectHideFlags: 0
@@ -410,6 +440,37 @@ MonoBehaviour:
   m_mouseControl: {fileID: 1549948484}
   m_gameMap: {fileID: 1888883648}
   m_currentDebugAction: 0
+--- !u!1 &1638938549
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1638938550}
+  m_Layer: 0
+  m_Name: Unit Container
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1638938550
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1638938549}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 975416772}
+  m_Father: {fileID: 0}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1888883647
 GameObject:
   m_ObjectHideFlags: 0
@@ -567,7 +628,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_cameraControl: {fileID: 583326553}
   m_gameMap: {fileID: 1888883648}
+  m_unitContainer: {fileID: 1638938550}
+  m_modelContainer: {fileID: 975416772}
   m_unitPrefab: {fileID: 4855334919656905373, guid: c9c60c3da71a53247b32077a099effef, type: 3}
-  m_playerUnitProfile: {fileID: 11400000, guid: 9cc47bc979f5a034696cd0a5f360980f, type: 2}
+  m_unitProfiles:
+  - key: 1
+    value: {fileID: 11400000, guid: 9cc47bc979f5a034696cd0a5f360980f, type: 2}
+  - key: 0
+    value: {fileID: 11400000, guid: 21527fe999ba3de4e929457f7b01a984, type: 2}
   m_debugBotCount: 2
-  m_debugAIUnitProfile: {fileID: 11400000, guid: 21527fe999ba3de4e929457f7b01a984, type: 2}

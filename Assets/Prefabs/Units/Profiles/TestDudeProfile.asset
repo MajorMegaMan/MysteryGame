@@ -17,3 +17,7 @@ MonoBehaviour:
     health: 20
     strength: 5
     speed: 5
+  m_statGrowth:
+    health: 10
+    strength: 2
+    speed: 0.1

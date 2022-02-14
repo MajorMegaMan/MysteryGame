@@ -21,12 +21,9 @@ public class TurnManager
     delegate void VoidAction();
     VoidAction m_waitAction;
 
-    public void Initialise(Unit player)
+    public TurnManager()
     {
         m_waitAction = WaitForInput;
-
-        // Debug
-        SetPlayer(player);
     }
 
     // This should be called once per frame. It Invokes the current turn action that the unit is trying to perform.
@@ -187,7 +184,7 @@ class UnitTurn
 
     public void IncrementTurnValue()
     {
-        m_turnValue += unit.profile.baseSpeed;
+        m_turnValue += unit.usableStats.speed;
     }
 
     public bool TryAddToTurn(List<UnitTurn> turnOrder, float speedPerTurn)
