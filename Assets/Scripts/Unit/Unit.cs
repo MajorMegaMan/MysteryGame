@@ -1,12 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Unit : PooledObject
 {
     // Gameplay var
-    [SerializeField] UnitProfile m_profile = null;
     [SerializeField] GameManager m_gameManager = null;
+    [SerializeField] UnitProfile m_profile = null;
     UsableUnitStats m_usableStats;
 
     // Models and animation
@@ -15,6 +16,9 @@ public class Unit : PooledObject
     [SerializeField, Range(0.0f, 1.0f)] float m_crossFadeTime = 0.2f;
     float m_runAnimNormalisedTime = 0.0f;
 
+    // UI Elements
+    [SerializeField] Slider m_healthBar = null;
+    [SerializeField] Transform m_healthBarContainer = null;
 
     // Input controller
     UnitController m_unitController = null;
@@ -32,6 +36,9 @@ public class Unit : PooledObject
     delegate void VoidFunc();
     VoidFunc m_moveAction = () => { };
 
+    public delegate void StatsAction(UsableUnitStats usableUnitStats);
+    StatsAction m_statChangeEvent;
+
     bool m_isMoving = false;
 
     // getters
@@ -46,6 +53,7 @@ public class Unit : PooledObject
     public UnitManager unitManager { get { return m_gameManager.unitManager; } }
     public UsableUnitStats usableStats { get { return m_usableStats; } }
 
+    #region UnityRelated
     // Start is called before the first frame update
     void Start()
     {
@@ -57,6 +65,15 @@ public class Unit : PooledObject
     {
         m_moveAction.Invoke();
     }
+
+    // Use this instantiate method to create units as this will attach all the necessary components.
+    public static Unit InstantiateUnit(GameManager gameManager, Unit prefab, Transform unitContainer)
+    {
+        Unit newUnit = Object.Instantiate(prefab, unitContainer);
+        newUnit.SetGameManager(gameManager);
+        return newUnit;
+    }
+    #endregion
 
     public void SetGameManager(GameManager gameManager)
     {
@@ -75,8 +92,21 @@ public class Unit : PooledObject
 
         // grab the stats from the profile. Will need to know if it should load stats or generate them, but for now, just generate
         m_usableStats = UsableUnitStats.GenerateOnUnit(this, profile, 1);
+
+        name = profile.unitName;
+
+        m_healthBar.maxValue = m_usableStats.maxHealth;
+        m_healthBar.value = m_usableStats.currentHealth;
     }
 
+    // Needs to also show/hide health bar when the unit is activated in the pool.
+    public override void SetIsActiveInPool(bool isActive)
+    {
+        base.SetIsActiveInPool(isActive);
+        m_healthBar.gameObject.SetActive(isActive);
+    }
+
+    #region GameMapNavigation
     void MoveToTargetPos()
     {
         Vector3 toTarget = m_targetPosition - transform.position;
@@ -234,6 +264,7 @@ public class Unit : PooledObject
         Vector3 assumedNeighbourOffset = m_currentTile.GetNeighbourOffset(direction);
         transform.forward = assumedNeighbourOffset;
     }
+    #endregion
 
     public void SetUnitController(UnitController unitController)
     {
@@ -256,7 +287,7 @@ public class Unit : PooledObject
             Unit targetUnit = targetTile.GetCurrentUnit();
             if(targetUnit != null)
             {
-                targetUnit.m_usableStats.ReceiveDamage(m_usableStats.CalcAttackDamage());
+                targetUnit.ReceiveDamage(CalcAttackDamage());
             }
         }
     }
@@ -278,5 +309,59 @@ public class Unit : PooledObject
 
         // clean up corpse
         unitManager.DespawnUnit(this);
+    }
+
+    #region StatUsage
+    // These are buffer funtions to be able to control when these events take place. Such as controlling health bars when the unit takes damage
+    public void LevelUp()
+    {
+        m_usableStats.LevelUp();
+
+        StatChangeEvent();
+        m_healthBar.maxValue = m_usableStats.maxHealth;
+    }
+
+    public float CalcAttackDamage()
+    {
+        return m_usableStats.CalcAttackDamage();
+    }
+
+    public float CalcDamageToHealth(float attackValue)
+    {
+        float result = m_usableStats.CalcDamageToHealth(attackValue);
+        return result;
+    }
+
+    public void ReceiveDamage(float attackValue)
+    {
+        m_usableStats.ReceiveDamage(attackValue);
+
+        StatChangeEvent();
+        m_healthBar.value = m_usableStats.currentHealth;
+    }
+    void StatChangeEvent()
+    {
+        m_statChangeEvent?.Invoke(m_usableStats);
+    }
+
+    public void AddStatChangeListener(StatsAction statsAction)
+    {
+        m_statChangeEvent += statsAction;
+    }
+
+    public void RemoveStatChangeListener(StatsAction statsAction)
+    {
+        m_statChangeEvent -= statsAction;
+    }
+    #endregion
+
+    public void ShowHealthBar(bool shouldShow)
+    {
+        m_healthBar.gameObject.SetActive(shouldShow);
+    }
+
+    public void SetHealthBarPos(Camera camera)
+    {
+        m_healthBarContainer.rotation = camera.transform.rotation;
     }
 }

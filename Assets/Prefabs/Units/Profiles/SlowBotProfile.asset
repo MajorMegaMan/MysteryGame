@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: SlowBotProfile
   m_EditorClassIdentifier: 
   m_modelObjectPrefab: {fileID: -1623533775256125595, guid: a68ba5a2bcd62774c8ec293c87362f45, type: 3}
+  m_unitName: roman
   m_baseStats:
-    health: 20
+    health: 25
     strength: 5
     speed: 4
   m_statGrowth:
-    health: 10
+    health: 12
     strength: 2
-    speed: 0.1
+    speed: 0.08

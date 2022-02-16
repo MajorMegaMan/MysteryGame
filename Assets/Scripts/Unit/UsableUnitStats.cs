@@ -11,8 +11,10 @@ public struct UsableUnitStats
 
     Unit m_unitRef;
 
+    public float currentHealth { get { return m_currentHealth; } }
+    public float maxHealth { get { return m_currentStats.health; } }
     public float speed { get { return m_currentStats.speed; } }
-
+    public float strength { get { return m_currentStats.strength; } }
 
     static UsableUnitStats _zero;
     public static UsableUnitStats zero { get { return _zero; } }
@@ -50,7 +52,7 @@ public struct UsableUnitStats
         return result;
     }
 
-    void LevelUp()
+    public void LevelUp()
     {
         m_level++;
         m_currentStats += m_unitRef.profile.statGrowth;
@@ -70,7 +72,7 @@ public struct UsableUnitStats
     public void ReceiveDamage(float attackValue)
     {
         m_currentHealth -= CalcDamageToHealth(attackValue);
-        if(m_currentHealth < 0)
+        if(m_currentHealth <= 0)
         {
             m_unitRef.Die();
         }

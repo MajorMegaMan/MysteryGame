@@ -14,12 +14,15 @@ public class TurnManager
     List<UnitTurn> m_tempTurnOrder = new List<UnitTurn>();
 
     // Holds a reference to each unit with it's upcoming turn, Varies greatly and often
-    List<Unit> m_turnOrder = new List<Unit>();
-
-    int m_currentUnitIndex = 0;
+    LinkedList<Unit> m_turnOrder = new LinkedList<Unit>();
 
     delegate void VoidAction();
     VoidAction m_waitAction;
+
+    // Debug Getters
+    public UnitTurn[] allUnitTurns { get { return m_allUnits.ToArray(); } }
+    public Unit[] turnOrder { get { Unit[] result = new Unit[m_turnOrder.Count]; m_turnOrder.CopyTo(result, 0); return result; } }
+    public Unit currentUnitsTurn { get { return m_turnOrder.First.Value; } }
 
     public TurnManager()
     {
@@ -38,7 +41,7 @@ public class TurnManager
     // waits for input from the current unit.
     void WaitForInput()
     {
-        Unit unit = m_turnOrder[m_currentUnitIndex];
+        Unit unit = m_turnOrder.First.Value;
 
         // check if the unit is currently engaged in something other than a turn related action
         // For example, if the unit is currently traversing between tiles.
@@ -53,7 +56,7 @@ public class TurnManager
         {
             // Current unit do action
             m_waitAction = WaitForActionEnd;
-            unitTurnAction.Perform(m_turnOrder[m_currentUnitIndex]);
+            unitTurnAction.Perform(unit);
         }
     }
 
@@ -66,11 +69,10 @@ public class TurnManager
     // ends the current unit's action and proceeds to wait for the next unit's input
     public void EndCurrentTurn()
     {
-        m_currentUnitIndex++;
+        m_turnOrder.RemoveFirst();
 
-        if (m_currentUnitIndex == m_turnOrder.Count)
+        if (m_turnOrder.Count == 0)
         {
-            m_currentUnitIndex = 0;
             FindTurnOrder();
         }
 
@@ -87,44 +89,28 @@ public class TurnManager
         // Set up lists
         m_turnOrder.Clear();
 
-        // add units until the player has been found
-        bool foundPlayer = false;
-        int tryCount = 0;
-        while(!foundPlayer)
+        m_tempTurnOrder.Clear();
+        bool unitReachedValue = false;
+        while(!unitReachedValue)
         {
-            tryCount++;
-            if(tryCount > 1000)
-            {
-                Debug.LogError("failed to establish turn order");
-                break;
-            }
-
             // increment turn values
             foreach (UnitTurn unitTurn in m_allUnits)
             {
                 unitTurn.IncrementTurnValue();
-            }
-
-            m_tempTurnOrder.Clear();
-            for (int i = 0; i < m_allUnits.Count; i++)
-            {
-                UnitTurn unitTurn = m_allUnits[i];
-                if (unitTurn.TryAddToTurn(m_tempTurnOrder, m_speedPerTurn))
+                if(unitTurn.turnValue >= m_speedPerTurn)
                 {
-                    if (unitTurn.unit == m_player)
-                    {
-                        // found the players turn
-                        foundPlayer = true;
-                    }
+                    m_tempTurnOrder.Add(unitTurn);
+                    unitReachedValue = true;
                 }
             }
+        }
 
-            m_tempTurnOrder.Sort(ITurnSort.comparer);
-            foreach (UnitTurn unitTurn in m_tempTurnOrder)
-            {
-                unitTurn.ProcessTurnValue(m_speedPerTurn);
-                m_turnOrder.Add(unitTurn.unit);
-            }
+        // sort and add to turn order
+        m_tempTurnOrder.Sort(ITurnSort.comparer);
+        foreach (UnitTurn unitTurn in m_tempTurnOrder)
+        {
+            unitTurn.ProcessTurnValue(m_speedPerTurn);
+            m_turnOrder.AddLast(unitTurn.unit);
         }
     }
 
@@ -149,7 +135,7 @@ public class TurnManager
     public void AddUnit(Unit unit)
     {
         m_allUnits.Add(new UnitTurn(unit));
-        m_turnOrder.Add(unit);
+        m_turnOrder.AddLast(unit);
     }
 
     // Need to find the unit in m_all units before removing it.
@@ -161,14 +147,15 @@ public class TurnManager
             if(m_allUnits[i].unit == unit)
             {
                 m_allUnits.RemoveAt(i);
-                return;
+                break;
             }
         }
+        m_turnOrder.Remove(unit);
     }
 }
 
 [System.Serializable]
-class UnitTurn
+public class UnitTurn
 {
     Unit m_unit;
 
@@ -221,11 +208,11 @@ public class ITurnSort : IComparer<UnitTurn>
     {
         if(lhs.turnValue < rhs.turnValue)
         {
-            return -1;
+            return 1;
         }
         else if (lhs.turnValue > rhs.turnValue)
         {
-            return 1;
+            return -1;
         }
         else
         {

@@ -12,8 +12,11 @@ public class CameraController : MonoBehaviour
     [SerializeField] Vector3 m_camOffset = Vector3.zero;
     [SerializeField] float m_camDistance = 5.0f;
 
-    delegate void VoidAction();
+    public delegate void VoidAction();
     VoidAction m_moveAction = () => { };
+    VoidAction m_onRenderEvent = null;
+
+    public Camera cam { get { return m_camera; } }
 
     private void Awake()
     {
@@ -45,19 +48,32 @@ public class CameraController : MonoBehaviour
         SetFollowTarget(m_followTarget);
     }
 
-    // update every render step to ensure that the camera is following the target
-    void FollowTarget(ScriptableRenderContext context, Camera camera)
+    public void AddRenderEvent(VoidAction action)
     {
+        m_onRenderEvent += action;
+    }
+
+    public void RemoveRenderEvent(VoidAction action)
+    {
+        m_onRenderEvent -= action;
+    }
+
+    // update every render step to ensure that the camera is following the target
+    void OnURPRender(ScriptableRenderContext context, Camera camera)
+    {
+        // Follow Transform
         m_moveAction.Invoke();
+
+        m_onRenderEvent?.Invoke();
     }
 
     private void OnEnable()
     {
-        RenderPipelineManager.beginCameraRendering += FollowTarget;
+        RenderPipelineManager.beginCameraRendering += OnURPRender;
     }
 
     private void OnDisable()
     {
-        RenderPipelineManager.beginCameraRendering -= FollowTarget;
+        RenderPipelineManager.beginCameraRendering -= OnURPRender;
     }
 }

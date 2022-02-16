@@ -7,18 +7,12 @@ public class GameManager : MonoBehaviour
     [Header("Control Stuff")]
     [SerializeField] CameraController m_cameraControl = null;
     [SerializeField] GameMap m_gameMap = null;
+    [SerializeField] PlayerHUD m_playerHUD = null;
 
     // managers
     UnitManager m_unitManager;
     TurnManager m_turnManager;
-    [SerializeField] Transform m_unitContainer = null;
-    [SerializeField] Transform m_modelContainer = null;
-
-    [Header("Unit Stuff")]
-    [SerializeField] Unit m_unitPrefab = null;
-    [SerializeField] SerialisedKeyValue<UnitProfileKey, UnitProfile>[] m_unitProfiles = null;
-    [SerializeField] int m_unitPoolCount = 5;
-    [SerializeField] int m_initalmodelsPoolCount = 3;
+    [SerializeField] UnitManager.UnitManagerPackage m_unitManagerPackage = null;
 
     // Unit references
     Unit m_player = null;
@@ -40,7 +34,7 @@ public class GameManager : MonoBehaviour
     private void Awake()
     {
         // Initialise unitManager
-        m_unitManager = new UnitManager(this, m_unitPrefab, m_unitPoolCount, m_unitProfiles, m_initalmodelsPoolCount, m_unitContainer, m_modelContainer);
+        m_unitManager = new UnitManager(this, m_unitManagerPackage);
         m_turnManager = new TurnManager();
         CreateControllers();
     }
@@ -51,6 +45,8 @@ public class GameManager : MonoBehaviour
         // Spawn units
         Tile playerTile = m_gameMap.GetTile(m_gameMap.startRoom.GetCentre());
         m_player = SpawnUnit(UnitProfileKey.debugPlayer, UnitControllerEnum.player, playerTile);
+
+        m_playerHUD.InitialiseWithPlayerUnit(m_player);
 
         m_debugAIUnits = new Unit[m_debugBotCount];
         for (int i = 0; i < m_debugBotCount; i++)
@@ -78,6 +74,8 @@ public class GameManager : MonoBehaviour
         m_turnManager.SetPlayer(m_player);
 
         m_turnManager.FindTurnOrder();
+
+        m_cameraControl.AddRenderEvent(UpdateHealthBarPositions);
     }
 
     // Update is called once per frame
@@ -112,5 +110,13 @@ public class GameManager : MonoBehaviour
         SetInitialTile(unit, tile);
 
         return unit;
+    }
+
+    void UpdateHealthBarPositions()
+    {
+        foreach (Unit unit in m_debugAIUnits)
+        {
+            unit.SetHealthBarPos(m_cameraControl.cam);
+        }
     }
 }

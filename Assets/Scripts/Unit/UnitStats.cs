@@ -43,8 +43,8 @@ public struct UnitStats
     {
         UnitStats result = lhs;
         result.health += rhs.health;
-        result.strength += rhs.health;
-        result.speed += rhs.health;
+        result.strength += rhs.strength;
+        result.speed += rhs.speed;
         return result;
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // This will be a class that has the logic needed for the game to spawn or despawn units.
 // This will contain object pools for the base unit classes
@@ -21,25 +22,40 @@ public class UnitManager
 
     List<Unit> m_activeUnits = null;
 
-    public Unit[] activeUnits { get { return m_activeUnits.ToArray(); } }
-
-    public UnitManager(GameManager gameManager, Unit unitPrefab, int unitPoolCount, SerialisedKeyValue<UnitProfileKey, UnitProfile>[] unitProfiles, int initialUnitModelcount, Transform unitContainer, Transform modelContainer)
+    [System.Serializable]
+    public class UnitManagerPackage
     {
-        Init(gameManager, unitPrefab, unitPoolCount, unitProfiles, initialUnitModelcount, unitContainer, modelContainer);
+        public Unit unitPrefab;
+        public int unitPoolCount;
+        public SerialisedKeyValue<UnitProfileKey, UnitProfile>[] unitProfiles;
+        public int initialUnitModelcount;
+
+        // containers
+        public Transform unitContainer;
+        public Transform modelContainer;
     }
 
-    void Init(GameManager gameManager, Unit unitPrefab, int unitPoolCount, SerialisedKeyValue<UnitProfileKey, UnitProfile>[] unitProfiles, int initialUnitModelcount, Transform unitContainer, Transform modelContainer)
+    public Unit[] activeUnits { get { return m_activeUnits.ToArray(); } }
+
+    public UnitManager(GameManager gameManager, UnitManagerPackage package)
     {
+        Init(gameManager, package);
+    }
+
+    void Init(GameManager gameManager, UnitManagerPackage package)
+    {
+        // set up references
         m_gameManager = gameManager;
-        m_unitContainer = unitContainer;
-        m_modelContainer = modelContainer;
+        m_unitContainer = package.unitContainer;
+        m_modelContainer = package.modelContainer;
 
-        m_unitPrefab = unitPrefab;
+        m_unitPrefab = package.unitPrefab;
 
-        m_unitPool = new GameObjectPool<Unit>(m_unitPrefab, unitPoolCount, InstantiateUnit, DestroyUnit);
+        // Set up dictionarys
+        m_unitPool = new GameObjectPool<Unit>(m_unitPrefab, package.unitPoolCount, InstantiateUnit, DestroyUnit);
 
         m_unitProfileDictionary = new Dictionary<UnitProfileKey, UnitProfile>();
-        foreach (var unitProfile in unitProfiles)
+        foreach (var unitProfile in package.unitProfiles)
         {
             m_unitProfileDictionary.Add(unitProfile.key, unitProfile.value);
         }
@@ -48,17 +64,15 @@ public class UnitManager
         foreach (var pair in m_unitProfileDictionary)
         {
             var profile = pair.Value;
-            m_unitProfileModelDictionary[pair.Key] = new GameObjectPool<ModelObject>(profile.modelObjectPrefab, initialUnitModelcount, InstantiateModel, DestroyModel);
+            m_unitProfileModelDictionary[pair.Key] = new GameObjectPool<ModelObject>(profile.modelObjectPrefab, package.initialUnitModelcount, InstantiateModel, DestroyModel);
         }
 
-        m_activeUnits = new List<Unit>(unitPoolCount);
+        m_activeUnits = new List<Unit>(package.unitPoolCount);
     }
 
     Unit InstantiateUnit(Unit prefab)
     {
-        Unit newUnit = Object.Instantiate(prefab, m_unitContainer);
-        newUnit.SetGameManager(m_gameManager);
-        return newUnit;
+        return Unit.InstantiateUnit(m_gameManager, prefab, m_unitContainer);
     }
 
     void DestroyUnit(Unit targetUnit)

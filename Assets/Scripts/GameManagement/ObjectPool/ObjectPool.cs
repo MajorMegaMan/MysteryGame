@@ -137,7 +137,7 @@ public class PooledObject : MonoBehaviour
     bool m_isActiveInPool = false;
     public bool isActiveInPool { get { return m_isActiveInPool; } }
 
-    public void SetIsActiveInPool(bool isActive)
+    public virtual void SetIsActiveInPool(bool isActive)
     {
         gameObject.SetActive(isActive);
         m_isActiveInPool = isActive;
