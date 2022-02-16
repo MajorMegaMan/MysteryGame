@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DebugAIController : UnitController
 {
-    public override IUnitTurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction)
+    public override ITurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction)
     {
         // Find any attack target for debug purposes
         List<Tile> validTiles = new List<Tile>();

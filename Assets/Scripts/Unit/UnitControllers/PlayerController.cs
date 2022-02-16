@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : UnitController
 {
-    public override IUnitTurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction)
+    public override ITurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction)
     {
         // TODO: Apply checks for what buttons the player is pressing to determine the action that should be taken
         // for now only move or pass

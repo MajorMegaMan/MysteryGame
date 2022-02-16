@@ -11,8 +11,9 @@ public class GameManager : MonoBehaviour
 
     // managers
     UnitManager m_unitManager;
-    TurnManager m_turnManager;
+    TurnManager<Unit> m_turnManager;
     [SerializeField] UnitManager.UnitManagerPackage m_unitManagerPackage = null;
+    UnitActionLog m_unitActionLog;
 
     // Unit references
     Unit m_player = null;
@@ -22,8 +23,9 @@ public class GameManager : MonoBehaviour
     Unit[] m_debugAIUnits = null;
 
     // getters
-    public TurnManager turnManager { get { return m_turnManager; } }
+    public TurnManager<Unit> turnManager { get { return m_turnManager; } }
     public UnitManager unitManager { get { return m_unitManager; } }
+    public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
 
     public enum UnitControllerEnum
     {
@@ -35,7 +37,8 @@ public class GameManager : MonoBehaviour
     {
         // Initialise unitManager
         m_unitManager = new UnitManager(this, m_unitManagerPackage);
-        m_turnManager = new TurnManager();
+        m_unitActionLog = new UnitActionLog();
+        m_turnManager = new TurnManager<Unit>();
         CreateControllers();
     }
 
@@ -71,7 +74,6 @@ public class GameManager : MonoBehaviour
         {
             m_turnManager.AddUnit(unit);
         }
-        m_turnManager.SetPlayer(m_player);
 
         m_turnManager.FindTurnOrder();
 

@@ -52,5 +52,5 @@ public abstract class UnitController
 
     }
 
-    public abstract IUnitTurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction);
+    public abstract ITurnAction FindUnitTurnAction(Unit unit, out Tile.NeighbourDirection direction);
 }

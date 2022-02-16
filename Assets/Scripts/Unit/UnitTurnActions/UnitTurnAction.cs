@@ -2,25 +2,20 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IUnitTurnAction
-{
-    void Perform(Unit unit);
-}
-
 public static class TurnActions
 {
-    static IUnitTurnAction[] _allTurnActions;
+    static ITurnAction[] _allTurnActions;
 
     static TurnActions()
     {
-        _allTurnActions = new IUnitTurnAction[(int)(TurnActionEnum.last) + 1];
+        _allTurnActions = new ITurnAction[(int)(TurnActionEnum.last) + 1];
 
         _allTurnActions[(int)TurnActionEnum.pass] = new PassTurnAction();
         _allTurnActions[(int)TurnActionEnum.attack] = new AttackTurnAction();
         _allTurnActions[(int)TurnActionEnum.move] = new MoveTurnAction();
     }
 
-    static public IUnitTurnAction GetTurnAction(TurnActionEnum turnActionEnum)
+    static public ITurnAction GetTurnAction(TurnActionEnum turnActionEnum)
     {
         return _allTurnActions[(int)turnActionEnum];
     }
@@ -34,32 +29,59 @@ public enum TurnActionEnum
 
     last = move
 }
-
-public class PassTurnAction : IUnitTurnAction
+public abstract class BaseAction : ITurnAction
 {
-    void IUnitTurnAction.Perform(Unit unit)
+    void ITurnAction.Perform(ITurnTaker turnTaker)
+    {
+        Unit unit = turnTaker as Unit;
+        unit.LogAction(GetActionEnum().ToString());
+        Perform(unit, turnTaker);
+    }
+
+    protected abstract void Perform(Unit unit, ITurnTaker unitAsTurnTaker);
+
+    public abstract TurnActionEnum GetActionEnum();
+}
+public class PassTurnAction : BaseAction
+{
+    protected override void Perform(Unit unit, ITurnTaker unitAsTurnTaker)
     {
         // immediately end turn because there was no action to take
-        unit.turnManager.EndCurrentTurn();
+        unitAsTurnTaker.EndTurn();
+    }
+
+    public override TurnActionEnum GetActionEnum()
+    {
+        return TurnActionEnum.pass;
     }
 }
 
-public class MoveTurnAction : IUnitTurnAction
+public class MoveTurnAction : BaseAction
 {
-    void IUnitTurnAction.Perform(Unit unit)
+    protected override void Perform(Unit unit, ITurnTaker unitAsTurnTaker)
     {
         // can force movement as the checks have already been made in find input
         unit.ForceMoveToNeighbourTile(unit.currentLookDirection);
 
         // immediately end turn because this was a movement Action
-        unit.turnManager.EndCurrentTurn();
+        unitAsTurnTaker.EndTurn();
+    }
+
+    public override TurnActionEnum GetActionEnum()
+    {
+        return TurnActionEnum.move;
     }
 }
 
-public class AttackTurnAction : IUnitTurnAction
+public class AttackTurnAction : BaseAction
 {
-    void IUnitTurnAction.Perform(Unit unit)
+    protected override void Perform(Unit unit, ITurnTaker unitAsTurnTaker)
     {
         unit.Attack(unit.currentLookDirection);
+    }
+
+    public override TurnActionEnum GetActionEnum()
+    {
+        return TurnActionEnum.attack;
     }
 }

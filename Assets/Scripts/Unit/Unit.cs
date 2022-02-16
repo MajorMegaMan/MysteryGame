@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Unit : PooledObject
+public class Unit : PooledObject, ITurnTaker
 {
     // Gameplay var
     [SerializeField] GameManager m_gameManager = null;
@@ -13,8 +13,6 @@ public class Unit : PooledObject
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
     [SerializeField] Animator m_anim = null;
-    [SerializeField, Range(0.0f, 1.0f)] float m_crossFadeTime = 0.2f;
-    float m_runAnimNormalisedTime = 0.0f;
 
     // UI Elements
     [SerializeField] Slider m_healthBar = null;
@@ -49,7 +47,7 @@ public class Unit : PooledObject
 
     public UnitProfile profile { get { return m_profile; } }
     public ModelObject modelObject { get { return m_modelObject; } }
-    public TurnManager turnManager { get { return m_gameManager.turnManager; } }
+    public TurnManager<Unit> turnManager { get { return m_gameManager.turnManager; } }
     public UnitManager unitManager { get { return m_gameManager.unitManager; } }
     public UsableUnitStats usableStats { get { return m_usableStats; } }
 
@@ -118,10 +116,7 @@ public class Unit : PooledObject
             m_moveAction = () => { };
             m_isMoving = false;
 
-            AnimatorStateInfo stateInfo = m_anim.GetCurrentAnimatorStateInfo(0);
-            m_runAnimNormalisedTime = stateInfo.normalizedTime;
-            m_anim.CrossFade("Idle", m_crossFadeTime);
-            //m_anim.SetTrigger("Idle");
+            m_anim.SetFloat("Movement", 0.0f);
         }
         else
         {
@@ -135,9 +130,7 @@ public class Unit : PooledObject
         m_moveAction = MoveToTargetPos;
         m_isMoving = true;
 
-        m_anim.CrossFade("Run", m_crossFadeTime, 0, m_runAnimNormalisedTime);
-        
-        //m_anim.SetTrigger("Run");
+        m_anim.SetFloat("Movement", 1.0f);
     }
 
     public void SetCurrentTile(Tile target)
@@ -271,16 +264,16 @@ public class Unit : PooledObject
         m_unitController = unitController;
     }
 
-    public IUnitTurnAction FindUnitTurnAction()
+    public ITurnAction FindUnitTurnAction()
     {
-        IUnitTurnAction turnAction = m_unitController.FindUnitTurnAction(this, out Tile.NeighbourDirection direction);
+        ITurnAction turnAction = m_unitController.FindUnitTurnAction(this, out Tile.NeighbourDirection direction);
         LookTowards(direction);
         return turnAction;
     }
 
     public void Attack(Tile.NeighbourDirection direction)
     {
-        m_anim.CrossFade("Attack", m_crossFadeTime);
+        m_anim.SetTrigger("Attack");
         Tile targetTile = m_currentTile.GetNeighbour(direction);
         if(targetTile != null)
         {
@@ -294,7 +287,7 @@ public class Unit : PooledObject
 
     public void EndTurnAction()
     {
-        m_anim.CrossFade("Idle", m_crossFadeTime);
+        // This is now a solid point where the unit will end their turn. End turn actions can be inserted here
         turnManager.EndCurrentTurn();
     }
 
@@ -363,5 +356,35 @@ public class Unit : PooledObject
     public void SetHealthBarPos(Camera camera)
     {
         m_healthBarContainer.rotation = camera.transform.rotation;
+    }
+
+    float ITurnTaker.GetTurnValue()
+    {
+        return m_usableStats.speed;
+    }
+
+    ITurnAction ITurnTaker.FindUnitTurnAction()
+    {
+        return FindUnitTurnAction();
+    }
+
+    bool ITurnTaker.IsEngaged()
+    {
+        return m_isMoving;
+    }
+
+    void ITurnTaker.EndTurn()
+    {
+        EndTurnAction();
+    }
+
+    public void LogAction(string actionName)
+    {
+        UnitActionLogInfo logInfo = new UnitActionLogInfo();
+        logInfo.unitName = name;
+        logInfo.actionName = actionName;
+        logInfo.direction = m_currentLookDirection;
+
+        m_gameManager.unitActionLog.actionLog.Add(logInfo);
     }
 }
