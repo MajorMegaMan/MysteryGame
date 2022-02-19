@@ -27,12 +27,6 @@ public class GameManager : MonoBehaviour
     public UnitManager unitManager { get { return m_unitManager; } }
     public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
 
-    public enum UnitControllerEnum
-    {
-        player,
-        debugAI
-    }
-
     private void Awake()
     {
         // Initialise unitManager

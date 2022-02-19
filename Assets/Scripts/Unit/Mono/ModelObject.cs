@@ -12,8 +12,6 @@ public class ModelObject : PooledObject
         transform.parent = unit.transform;
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-
-        GetComponent<AnimationEventRelay>().targetUnit = unit;
     }
 
     public void DetachCurrentUnit(Transform container)
@@ -22,5 +20,11 @@ public class ModelObject : PooledObject
         transform.parent = container;
 
         SetIsActiveInPool(false);
+    }
+
+    // This is called by animation events to end the unit's turn.
+    void RelayEvent()
+    {
+        m_currentUnit.EndTurnAction();
     }
 }

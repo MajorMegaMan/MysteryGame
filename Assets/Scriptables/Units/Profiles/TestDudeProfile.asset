@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a9a58b3e38136b478ca46a863a59405, type: 3}
-  m_Name: SpiderProfile
+  m_Name: TestDudeProfile
   m_EditorClassIdentifier: 
-  m_modelObjectPrefab: {fileID: 238157282, guid: fcfe2627f872bb6469d1a0e692efa7de, type: 3}
-  m_unitName: spider
+  m_unitName: egypt
+  m_modelGameObjectPrefab: {fileID: 2641153132125389462, guid: c3fed4a566e898e409c1fd839fbf4f0b, type: 3}
   m_baseStats:
-    health: 15
+    health: 20
     strength: 3
-    speed: 6
+    speed: 5
   m_statGrowth:
-    health: 8
+    health: 10
     strength: 2
-    speed: 0.2
+    speed: 0.1

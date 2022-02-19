@@ -950,7 +950,7 @@ MonoBehaviour:
     initialUnitModelcount: 3
     unitContainer: {fileID: 1638938550}
     modelContainer: {fileID: 975416772}
-  m_debugBotCount: 0
+  m_debugBotCount: 2
 --- !u!1 &2128082369
 GameObject:
   m_ObjectHideFlags: 0

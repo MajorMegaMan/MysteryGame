@@ -1,31 +1,18 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &238157281
+--- !u!114 &6389735570479008662
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8471424604966836112}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: de303c1da517a1f48b2f69365e5d3189, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetUnit: {fileID: 0}
---- !u!114 &238157282
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8471424604966836112}
+  m_GameObject: {fileID: 7997254704609201455}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ac758bd54329ad64086942dc5d2435af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1001 &8471424604966801740
+--- !u!1001 &7997254704609102835
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -34,7 +21,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100060, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
       propertyPath: m_Name
-      value: Spider Model
+      value: Spider
       objectReference: {fileID: 0}
     - target: {fileID: 400062, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -80,26 +67,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 400062, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 400062, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 400062, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 9500000, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 22100000, guid: 89a554dfaff958b46a02320a7ba5269d, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
---- !u!1 &8471424604966836112 stripped
+--- !u!1 &7997254704609201455 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100060, guid: 9407fec50666b7546900a3898e0c472b, type: 3}
-  m_PrefabInstance: {fileID: 8471424604966801740}
+  m_PrefabInstance: {fileID: 7997254704609102835}
   m_PrefabAsset: {fileID: 0}
