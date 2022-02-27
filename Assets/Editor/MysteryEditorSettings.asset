@@ -17,4 +17,9 @@ MonoBehaviour:
   m_prefabPath: Prefabs/
   m_unitProfilesPath: Units/Profiles/
   m_modelObjectsPath: Units/Models/
-  m_minDataWidth: 320
+  m_minDataWidth: 230
+  m_defaultDataWidth: 320
+  m_minDisplayWidth: 100
+  m_defaultSideBarWidth: 200
+  m_minSideBarWidth: 100
+  m_windowControlSize: 4

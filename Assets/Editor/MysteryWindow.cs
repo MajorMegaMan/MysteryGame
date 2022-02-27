@@ -10,13 +10,27 @@ public abstract class MysteryWindow : EditorWindow
 
     bool m_isWaiting = false;
 
+    public static void OpenWindow<WindowType>() where WindowType : MysteryWindow
+    {
+        // Get existing open window or if none, make a new one:
+        WindowType window = GetWindow<WindowType>();
+        window.Show();
+    }
+
+    public static void OpenWindow<WindowType>(string windowTitle) where WindowType : MysteryWindow
+    {
+        // Get existing open window or if none, make a new one:
+        WindowType window = GetWindow<WindowType>(windowTitle);
+        window.Show();
+    }
+
     protected void ShowModelPreview(Rect previewRect, GameObject modelObject)
     {
         string label;
         if(EditorApplication.isPlayingOrWillChangePlaymode || m_isWaiting)
         {
             label = "Application is playing";
-            GUI.Box(previewRect, "", UnitEditorHelpers.blackStyle);
+            GUI.Box(previewRect, "", MysteryEditorUtility.Styles.blackStyle);
         }
         else
         {
@@ -39,7 +53,7 @@ public abstract class MysteryWindow : EditorWindow
             else
             {
                 label = "No model Loaded";
-                GUI.Box(previewRect, "", UnitEditorHelpers.blackStyle);
+                GUI.Box(previewRect, "", MysteryEditorUtility.Styles.blackStyle);
             }
         }
 
@@ -49,7 +63,7 @@ public abstract class MysteryWindow : EditorWindow
         labelPos.y = previewRect.position.y + previewRect.height - labelRect.height * 2;
         labelRect.position = labelPos;
 
-        GUI.Label(labelRect, label, UnitEditorHelpers.previewTextStyle);
+        GUI.Label(labelRect, label, MysteryEditorUtility.Styles.previewTextStyle);
     }
 
     protected void CreateModelObjectEditor(GameObject modelObject)
@@ -65,26 +79,6 @@ public abstract class MysteryWindow : EditorWindow
             DestroyImmediate(m_modelObjectEditor);
             m_modelObjectEditor = null;
         }
-    }
-
-    protected T CreateScriptableObject<T>(string path) where T : ScriptableObject
-    {
-        return UnitEditorHelpers.CreateScriptableObject<T>(path);
-    }
-
-    protected T CreateScriptableObject<T>(string path, UnitEditorHelpers.EditSourceFunc<T> editFunc, params object[] objects) where T : ScriptableObject
-    {
-        return UnitEditorHelpers.CreateScriptableObject<T>(path, editFunc, objects);
-    }
-
-    protected GameObject CreateObjectPrefab(GameObject sourceModelPrefab, string path)
-    {
-        return UnitEditorHelpers.CreateObjectPrefab(sourceModelPrefab, path);
-    }
-
-    protected GameObject CreateObjectPrefab(GameObject sourceModelPrefab, string path, UnitEditorHelpers.EditSourceFunc editFunc, params object[] objects)
-    {
-        return UnitEditorHelpers.CreateObjectPrefab(sourceModelPrefab, path, editFunc, objects);
     }
 
     protected virtual void PlayStateChanged(PlayModeStateChange playModeStateChange)

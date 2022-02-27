@@ -35,7 +35,7 @@ public class ModelObjectWindow : MysteryWindow
                 if (GUILayout.Button("Create Model Object Asset"))
                 {
                     string path = AssetDatabase.GenerateUniqueAssetPath(MysteryEditorSettings.modelObjectsPath + m_assetObject.name + "_ModelObject.prefab");
-                    CreateObjectPrefab(m_assetObject, path, EditPrefabSourceFunc, m_animController);
+                    MysteryEditorUtility.Creators.CreateObjectPrefab(m_assetObject, path, EditPrefabSourceFunc, m_animController);
                 }
                 EditorGUILayout.EndVertical();
             }

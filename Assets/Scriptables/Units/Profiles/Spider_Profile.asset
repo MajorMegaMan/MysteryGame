@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6a9a58b3e38136b478ca46a863a59405, type: 3}
-  m_Name: SlowBotProfile
+  m_Name: Spider_Profile
   m_EditorClassIdentifier: 
-  m_unitName: roman
-  m_modelGameObjectPrefab: {fileID: 8388491018409440776, guid: cad32c606823fcb4ba5c10e7b67f4844, type: 3}
+  m_unitName: Spider
+  m_modelGameObjectPrefab: {fileID: 7997254704609201455, guid: 911ec3911eee7c14e83ef77712c10516, type: 3}
   m_baseStats:
-    health: 25
-    strength: 5
-    speed: 4
-  m_statGrowth:
-    health: 12
+    health: 15
     strength: 2
-    speed: 0.08
+    speed: 6
+  m_statGrowth:
+    health: 8
+    strength: 2
+    speed: 0.2
