@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MysterySystems.UnitStats;
 
 [System.Serializable]
 public class PlayerHUD
@@ -16,7 +17,7 @@ public class PlayerHUD
     {
         m_player = player;
         m_player.AddStatChangeListener(UpdateHUD);
-        UpdateHUD(m_player.usableStats);
+        UpdateHUD(m_player.unitStats);
         m_player.ShowHealthBar(false);
     }
 
@@ -28,10 +29,12 @@ public class PlayerHUD
         InitialiseWithPlayerUnit(targetPlayer);
     }
 
-    void UpdateHUD(UsableUnitStats unitStats)
+    void UpdateHUD(UnitStats unitStats)
     {
-        m_healthBar.maxValue = unitStats.maxHealth;
-        m_healthBar.value = unitStats.currentHealth;
+        ResourceStat healthStat = unitStats.GetStat(ResourceStatKey.health);
+        m_healthBar.maxValue = healthStat.maxValue;
+        m_healthBar.value = healthStat.value;
+
         m_heathBarFill.color = m_healthGradient.Evaluate(m_healthBar.normalizedValue);
     }
 }

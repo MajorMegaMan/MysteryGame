@@ -944,9 +944,9 @@ MonoBehaviour:
     unitPoolCount: 5
     unitProfiles:
     - key: 1
-      value: {fileID: 11400000, guid: 9cc47bc979f5a034696cd0a5f360980f, type: 2}
+      value: {fileID: 11400000, guid: 971c1e90e2051944bb8d3e159a38c231, type: 2}
     - key: 0
-      value: {fileID: 11400000, guid: 21527fe999ba3de4e929457f7b01a984, type: 2}
+      value: {fileID: 11400000, guid: f76b4cddaf989894ebf35f8de0e927f1, type: 2}
     initialUnitModelcount: 3
     unitContainer: {fileID: 1638938550}
     modelContainer: {fileID: 975416772}

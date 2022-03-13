@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using MysterySystems.UnitStats;
 
 public class Unit : PooledObject, ITurnTaker
 {
     // Gameplay var
     [SerializeField] GameManager m_gameManager = null;
-    [SerializeField] UnitProfile m_profile = null;
-    UsableUnitStats m_usableStats;
+    UnitStats m_unitStats = null;
 
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
@@ -34,7 +34,7 @@ public class Unit : PooledObject, ITurnTaker
     delegate void VoidFunc();
     VoidFunc m_moveAction = () => { };
 
-    public delegate void StatsAction(UsableUnitStats usableUnitStats);
+    public delegate void StatsAction(UnitStats unitStats);
     StatsAction m_statChangeEvent;
 
     bool m_isMoving = false;
@@ -45,11 +45,11 @@ public class Unit : PooledObject, ITurnTaker
     public Tile.Access tileAccess { get { return m_tileAccess; } }
     public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
 
-    public UnitProfile profile { get { return m_profile; } }
     public ModelObject modelObject { get { return m_modelObject; } }
     public TurnManager<Unit> turnManager { get { return m_gameManager.turnManager; } }
     public UnitManager unitManager { get { return m_gameManager.unitManager; } }
-    public UsableUnitStats usableStats { get { return m_usableStats; } }
+    public UnitStats unitStats { get { return m_unitStats; } }
+    public UnitProfile profile { get { return m_unitStats.profile; } }
 
     #region UnityRelated
     // Start is called before the first frame update
@@ -81,7 +81,6 @@ public class Unit : PooledObject, ITurnTaker
     // When a profile is attached to a unit it will also need to update that unit's mesh and material
     public void SetProfile(UnitProfile profile, ModelObject modelObject)
     {
-        m_profile = profile;
 
         modelObject.SetCurrentUnit(this);
 
@@ -89,12 +88,13 @@ public class Unit : PooledObject, ITurnTaker
         m_anim = m_modelObject.GetComponent<Animator>();
 
         // grab the stats from the profile. Will need to know if it should load stats or generate them, but for now, just generate
-        m_usableStats = UsableUnitStats.GenerateOnUnit(this, profile, 1);
+        m_unitStats = new UnitStats(profile, 1);
 
-        name = profile.unitName;
+        name = profile.profileName;
 
-        m_healthBar.maxValue = m_usableStats.maxHealth;
-        m_healthBar.value = m_usableStats.currentHealth;
+        ResourceStat healthStat = m_unitStats.GetStat(ResourceStatKey.health);
+        m_healthBar.maxValue = healthStat.maxValue;
+        m_healthBar.value = healthStat.value;
     }
 
     // Needs to also show/hide health bar when the unit is activated in the pool.
@@ -308,33 +308,42 @@ public class Unit : PooledObject, ITurnTaker
     // These are buffer funtions to be able to control when these events take place. Such as controlling health bars when the unit takes damage
     public void LevelUp()
     {
-        m_usableStats.LevelUp();
+        m_unitStats.LevelUp();
 
         StatChangeEvent();
-        m_healthBar.maxValue = m_usableStats.maxHealth;
+        m_healthBar.maxValue = m_unitStats.GetStat(ResourceStatKey.health).maxValue;
     }
 
     public float CalcAttackDamage()
     {
-        return m_usableStats.CalcAttackDamage();
+        // This will eventually have bonuses from weapons and the like
+        return m_unitStats.GetStat(CoreStatKey.strength).value;
     }
 
     public float CalcDamageToHealth(float attackValue)
     {
-        float result = m_usableStats.CalcDamageToHealth(attackValue);
+        // This will eventually have defense values intergrated into it
+        // Things like armour or even natural defense values
+        float result = attackValue;
         return result;
     }
 
     public void ReceiveDamage(float attackValue)
     {
-        m_usableStats.ReceiveDamage(attackValue);
+        ResourceStat healthStat = m_unitStats.GetStat(ResourceStatKey.health);
+
+        healthStat.value -= CalcDamageToHealth(attackValue);
+        if(healthStat.value <= 0)
+        {
+            Die();
+        }
 
         StatChangeEvent();
-        m_healthBar.value = m_usableStats.currentHealth;
+        m_healthBar.value = healthStat.value;
     }
     void StatChangeEvent()
     {
-        m_statChangeEvent?.Invoke(m_usableStats);
+        m_statChangeEvent?.Invoke(m_unitStats);
     }
 
     public void AddStatChangeListener(StatsAction statsAction)
@@ -360,7 +369,7 @@ public class Unit : PooledObject, ITurnTaker
 
     float ITurnTaker.GetTurnValue()
     {
-        return m_usableStats.speed;
+        return m_unitStats.GetStat(CoreStatKey.speed).value;
     }
 
     ITurnAction ITurnTaker.FindUnitTurnAction()

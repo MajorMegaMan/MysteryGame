@@ -12,12 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d94596d09ae9584b9a3d211085ee601, type: 3}
   m_Name: MysteryEditorSettings
   m_EditorClassIdentifier: 
+  m_currentProfileSet: {fileID: 11400000, guid: 55493b205e4d3354fa0e6eaf61c9ecb3, type: 2}
   m_assetPath: Assets/
   m_scriptablePath: Scriptables/
   m_prefabPath: Prefabs/
   m_unitProfilesPath: Units/Profiles/
   m_modelObjectsPath: Units/Models/
-  m_minDataWidth: 230
+  m_minDataWidth: 200
   m_defaultDataWidth: 320
   m_minDisplayWidth: 100
   m_defaultSideBarWidth: 200

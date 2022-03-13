@@ -66,6 +66,7 @@ public class GameMap : MonoBehaviour
             triangulationPoint.y = roomCentre.z;
             roomTriangulationPoints.Add(triangulationPoint);
         }
+
         // Triangulate Rooms
         DelaunayMap delMap = new DelaunayMap();
         delMap.Initialise(roomTriangulationPoints.ToArray());

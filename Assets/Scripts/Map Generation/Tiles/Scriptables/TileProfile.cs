@@ -7,7 +7,8 @@ public class TileProfile : ScriptableObject
 {
     public Tile.Access access = 0;
 
-    TileTextureSet m_owner = null;
+    // This needs to be serialised so that the data is carried over to the build. Very weird and there is most likely a better solution.
+    [HideInInspector, SerializeField] TileTextureSet m_owner = null;
     public int m_UVIndexX = 0;
     public int m_UVIndexY = 0;
 
