@@ -9,6 +9,7 @@ public class Unit : PooledObject, ITurnTaker
     // Gameplay var
     [SerializeField] GameManager m_gameManager = null;
     UnitStats m_unitStats = null;
+    Dictionary<EOTConditionKey, UnitEndTurnCondition> m_endOfTurnConditions = new Dictionary<EOTConditionKey, UnitEndTurnCondition>();
 
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
@@ -289,6 +290,10 @@ public class Unit : PooledObject, ITurnTaker
     {
         // This is now a solid point where the unit will end their turn. End turn actions can be inserted here
         turnManager.EndCurrentTurn();
+        foreach(var EOTConditionPair in m_endOfTurnConditions)
+        {
+            EOTConditionPair.Value.PerformAction();
+        }
     }
 
     public void Die()
@@ -310,7 +315,7 @@ public class Unit : PooledObject, ITurnTaker
     {
         m_unitStats.LevelUp();
 
-        StatChangeEvent();
+        InvokeStatChangeEvent();
         m_healthBar.maxValue = m_unitStats.GetStat(ResourceStatKey.health).maxValue;
     }
 
@@ -338,10 +343,11 @@ public class Unit : PooledObject, ITurnTaker
             Die();
         }
 
-        StatChangeEvent();
+        InvokeStatChangeEvent();
         m_healthBar.value = healthStat.value;
     }
-    void StatChangeEvent()
+
+    public void InvokeStatChangeEvent()
     {
         m_statChangeEvent?.Invoke(m_unitStats);
     }
@@ -357,6 +363,7 @@ public class Unit : PooledObject, ITurnTaker
     }
     #endregion
 
+    #region UIUsage
     public void ShowHealthBar(bool shouldShow)
     {
         m_healthBar.gameObject.SetActive(shouldShow);
@@ -366,7 +373,9 @@ public class Unit : PooledObject, ITurnTaker
     {
         m_healthBarContainer.rotation = camera.transform.rotation;
     }
+    #endregion
 
+    #region TurnLogic
     float ITurnTaker.GetTurnValue()
     {
         return m_unitStats.GetStat(CoreStatKey.speed).value;
@@ -395,5 +404,18 @@ public class Unit : PooledObject, ITurnTaker
         logInfo.direction = m_currentLookDirection;
 
         m_gameManager.unitActionLog.actionLog.Add(logInfo);
+    }
+    #endregion
+
+    public void AddEndOfTurnCondition(EOTConditionKey conditionKey)
+    {
+        var newCondition = UnitEndTurnCondition.CreateCondition(conditionKey);
+        newCondition.Init(this);
+        m_endOfTurnConditions[conditionKey] = newCondition;
+    }
+
+    public void RemoveEndOfTurnCondition(EOTConditionKey conditionKey)
+    {
+        m_endOfTurnConditions.Remove(conditionKey);
     }
 }

@@ -8,8 +8,12 @@ using MysterySystems.UnitStats;
 public class PlayerHUD
 {
     [SerializeField] Slider m_healthBar = null;
-    [SerializeField] Image m_heathBarFill = null;
+    [SerializeField] Image m_healthBarFill = null;
     [SerializeField] Gradient m_healthGradient = null;
+
+    [SerializeField] Slider m_hungerBar = null;
+    [SerializeField] Image m_hungerBarFill = null;
+    [SerializeField] Gradient m_hungerGradient = null;
 
     Unit m_player = null;
 
@@ -35,6 +39,11 @@ public class PlayerHUD
         m_healthBar.maxValue = healthStat.maxValue;
         m_healthBar.value = healthStat.value;
 
-        m_heathBarFill.color = m_healthGradient.Evaluate(m_healthBar.normalizedValue);
+        m_healthBarFill.color = m_healthGradient.Evaluate(m_healthBar.normalizedValue);
+
+        ResourceStat hungerStat = unitStats.GetStat(ResourceStatKey.hunger);
+        m_hungerBar.maxValue = hungerStat.maxValue;
+        m_hungerBar.value = hungerStat.value;
+        m_hungerBarFill.color = m_hungerGradient.Evaluate(m_hungerBar.normalizedValue);
     }
 }

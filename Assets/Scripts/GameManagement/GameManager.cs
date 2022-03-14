@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
     public TurnManager<Unit> turnManager { get { return m_turnManager; } }
     public UnitManager unitManager { get { return m_unitManager; } }
     public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
+    public Unit playerUnit { get { return m_player; } }
 
     private void Awake()
     {
@@ -44,6 +45,7 @@ public class GameManager : MonoBehaviour
         m_player = SpawnUnit(UnitProfileKey.debugPlayer, UnitControllerEnum.player, playerTile);
 
         m_playerHUD.InitialiseWithPlayerUnit(m_player);
+        m_player.AddEndOfTurnCondition(EOTConditionKey.hunger);
 
         m_debugAIUnits = new Unit[m_debugBotCount];
         for (int i = 0; i < m_debugBotCount; i++)
