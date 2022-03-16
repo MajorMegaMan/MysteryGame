@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
     TurnManager<Unit> m_turnManager;
     [SerializeField] UnitManager.UnitManagerPackage m_unitManagerPackage = null;
     UnitActionLog m_unitActionLog;
+    ItemManager m_itemManager = null;
 
     // Unit references
     Unit m_player = null;
@@ -21,12 +22,14 @@ public class GameManager : MonoBehaviour
     [Header("Debug Stuff")]
     [SerializeField] int m_debugBotCount = 2;
     Unit[] m_debugAIUnits = null;
+    [SerializeField] ItemLibrary m_itemLibrary = null;
 
     // getters
     public TurnManager<Unit> turnManager { get { return m_turnManager; } }
     public UnitManager unitManager { get { return m_unitManager; } }
     public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
     public Unit playerUnit { get { return m_player; } }
+    public ItemManager itemManager { get { return m_itemManager; } }
 
     private void Awake()
     {
@@ -34,6 +37,7 @@ public class GameManager : MonoBehaviour
         m_unitManager = new UnitManager(this, m_unitManagerPackage);
         m_unitActionLog = new UnitActionLog();
         m_turnManager = new TurnManager<Unit>();
+        m_itemManager = new ItemManager(m_itemLibrary);
         CreateControllers();
     }
 

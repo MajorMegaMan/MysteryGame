@@ -7,43 +7,33 @@ using MysterySystems.UnitStats;
 [System.Serializable]
 public class PlayerHUD
 {
-    [SerializeField] Slider m_healthBar = null;
-    [SerializeField] Image m_healthBarFill = null;
-    [SerializeField] Gradient m_healthGradient = null;
-
-    [SerializeField] Slider m_hungerBar = null;
-    [SerializeField] Image m_hungerBarFill = null;
-    [SerializeField] Gradient m_hungerGradient = null;
+    [SerializeField] UIResourceBar m_healthBar = null;
+    [SerializeField] UIResourceBar m_hungerBar = null;
 
     Unit m_player = null;
+    [SerializeField] UIInventory m_UIInventory = null;
 
     public void InitialiseWithPlayerUnit(Unit player)
     {
         m_player = player;
-        m_player.AddStatChangeListener(UpdateHUD);
-        UpdateHUD(m_player.unitStats);
+
+        m_healthBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
+        m_hungerBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
+
         m_player.ShowHealthBar(false);
+
+        m_UIInventory.SetInventory(m_player.inventory);
+        m_UIInventory.InstantiateUIInventorySlots();
     }
 
     public void ChangePlayerUnit(Unit targetPlayer)
     {
-        m_player.RemoveStatChangeListener(UpdateHUD);
+        m_healthBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
+        m_hungerBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
+
         m_player.ShowHealthBar(true);
+        m_UIInventory.DestroyUIInventorySlots();
 
         InitialiseWithPlayerUnit(targetPlayer);
-    }
-
-    void UpdateHUD(UnitStats unitStats)
-    {
-        ResourceStat healthStat = unitStats.GetStat(ResourceStatKey.health);
-        m_healthBar.maxValue = healthStat.maxValue;
-        m_healthBar.value = healthStat.value;
-
-        m_healthBarFill.color = m_healthGradient.Evaluate(m_healthBar.normalizedValue);
-
-        ResourceStat hungerStat = unitStats.GetStat(ResourceStatKey.hunger);
-        m_hungerBar.maxValue = hungerStat.maxValue;
-        m_hungerBar.value = hungerStat.value;
-        m_hungerBarFill.color = m_hungerGradient.Evaluate(m_hungerBar.normalizedValue);
     }
 }

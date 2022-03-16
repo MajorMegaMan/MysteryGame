@@ -10,6 +10,7 @@ public class Unit : PooledObject, ITurnTaker
     [SerializeField] GameManager m_gameManager = null;
     UnitStats m_unitStats = null;
     Dictionary<EOTConditionKey, UnitEndTurnCondition> m_endOfTurnConditions = new Dictionary<EOTConditionKey, UnitEndTurnCondition>();
+    Inventory<Unit> m_inventory = null;
 
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
@@ -51,6 +52,7 @@ public class Unit : PooledObject, ITurnTaker
     public UnitManager unitManager { get { return m_gameManager.unitManager; } }
     public UnitStats unitStats { get { return m_unitStats; } }
     public UnitProfile profile { get { return m_unitStats.profile; } }
+    public Inventory<Unit> inventory { get { return m_inventory; } }
 
     #region UnityRelated
     // Start is called before the first frame update
@@ -79,10 +81,10 @@ public class Unit : PooledObject, ITurnTaker
         m_gameManager = gameManager;
     }
 
+    // This is the main function that is called when a Unit is spawned into the map
     // When a profile is attached to a unit it will also need to update that unit's mesh and material
     public void SetProfile(UnitProfile profile, ModelObject modelObject)
     {
-
         modelObject.SetCurrentUnit(this);
 
         m_modelObject = modelObject;
@@ -94,8 +96,13 @@ public class Unit : PooledObject, ITurnTaker
         name = profile.profileName;
 
         ResourceStat healthStat = m_unitStats.GetStat(ResourceStatKey.health);
+        healthStat.Reset();
         m_healthBar.maxValue = healthStat.maxValue;
         m_healthBar.value = healthStat.value;
+
+        // For now, inventory can be set here. But it would eventually have a loot table associated with it's unit profile IF it is bot controlled.
+        // Player units will load their own inventorys designated by the player.
+        m_inventory = new Inventory<Unit>(this);
     }
 
     // Needs to also show/hide health bar when the unit is activated in the pool.
