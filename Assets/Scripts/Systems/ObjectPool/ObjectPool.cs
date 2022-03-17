@@ -1,20 +1,34 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class GameObjectPool<T> where T : PooledObject
+public class GameObjectPool<T> where T : IPooledObject
 {
-    Queue<T> m_pooledObjects;
+    Queue<PooledObject> m_pooledObjects;
 
     public delegate T CreateAction(T objectPrefab);
-    CreateAction m_createAction = Object.Instantiate;
+    CreateAction m_createAction = null;
 
     public delegate void PoolAction(T pooledObject);
-    PoolAction m_destroyAction = (pooledObject) => { Object.Destroy(pooledObject.gameObject); };
+    PoolAction m_destroyAction = null;
 
-    public GameObjectPool(T objectPrefab, int poolCount)
+    // PooledObject is the internal class used by the objectPool to manage the state of whether it is active in the pool or not.
+    class PooledObject
     {
-        Init(objectPrefab, poolCount);
+        T m_target = default;
+        bool m_isActiveInPool = false;
+        public bool isActiveInPool { get { return m_isActiveInPool; } }
+        public T target { get { return m_target; } }
+
+        public PooledObject(T target)
+        {
+            m_target = target;
+        }
+
+        public virtual void SetIsActiveInPool(bool isActive)
+        {
+            m_isActiveInPool = isActive;
+            m_target.SetIsActiveInPool(isActive);
+        }
     }
 
     public GameObjectPool(T objectPrefab, int poolCount, CreateAction createAction, PoolAction destroyAction)
@@ -27,7 +41,7 @@ public class GameObjectPool<T> where T : PooledObject
 
     void Init(T objectPrefab, int poolCount)
     {
-        m_pooledObjects = new Queue<T>();
+        m_pooledObjects = new Queue<PooledObject>();
 
         for(int i = 0; i < poolCount; i++)
         {
@@ -40,19 +54,19 @@ public class GameObjectPool<T> where T : PooledObject
     public T ActivateObject()
     {
         // Get Next pooled object in queue.
-        T initialPooledObject = m_pooledObjects.Dequeue();
+        var initialPooledObject = m_pooledObjects.Dequeue();
         m_pooledObjects.Enqueue(initialPooledObject);
 
         // Test if it can be used.
         if(!initialPooledObject.isActiveInPool)
         {
-            // Pooled object can be used, set it active and return it.
+            // Pooled object can be used, set it active and return the target.
             initialPooledObject.SetIsActiveInPool(true);
-            return initialPooledObject;
+            return initialPooledObject.target;
         }
 
         // Initial pooled object cannot be used. continue searching for next available.
-        T pooledObject;
+        PooledObject pooledObject;
         do
         {
             // Get Next pooled object in queue.
@@ -62,28 +76,23 @@ public class GameObjectPool<T> where T : PooledObject
             // Test if it can be used.
             if (!pooledObject.isActiveInPool)
             {
-                // Pooled object can be used, set it active and return it.
+                // Pooled object can be used, set it active and return the target.
                 pooledObject.SetIsActiveInPool(true);
-                return pooledObject;
+                return pooledObject.target;
             }
         }
         while (pooledObject != initialPooledObject);
         // If all objects have been searched, and none are available. return null
 
-        return null;
-    }
-
-    // Simply Deactivates target pooled object. Probably unneccesary, but makes it easier to call it from here maybe.
-    public void DeactivateObject(T pooledObject)
-    {
-        pooledObject.SetIsActiveInPool(false);
+        return default;
     }
 
     void CreateGameObject(T objectPrefab)
     {
         T newObject = m_createAction.Invoke(objectPrefab);
-        m_pooledObjects.Enqueue(newObject);
-        newObject.SetIsActiveInPool(false);
+        PooledObject newPooledObject = new PooledObject(newObject);
+        m_pooledObjects.Enqueue(newPooledObject);
+        newPooledObject.SetIsActiveInPool(false);
     }
 
     void DestroyGameObject(T pooledObject)
@@ -101,9 +110,9 @@ public class GameObjectPool<T> where T : PooledObject
 
     public void ResizePool(T objectPrefab, int count)
     {
-        Queue<T> oldPooledObjects = m_pooledObjects;
+        Queue<PooledObject> oldPooledObjects = m_pooledObjects;
 
-        m_pooledObjects = new Queue<T>();
+        m_pooledObjects = new Queue<PooledObject>();
 
         // Copy old elements
         for (int i = 0; i < count; i++)
@@ -127,19 +136,7 @@ public class GameObjectPool<T> where T : PooledObject
         // If oldObject still has elements, destroy them
         while (oldPooledObjects.Count > 0)
         {
-            DestroyGameObject(oldPooledObjects.Dequeue());
+            DestroyGameObject(oldPooledObjects.Dequeue().target);
         }
-    }
-}
-
-public class PooledObject : MonoBehaviour
-{
-    bool m_isActiveInPool = false;
-    public bool isActiveInPool { get { return m_isActiveInPool; } }
-
-    public virtual void SetIsActiveInPool(bool isActive)
-    {
-        gameObject.SetActive(isActive);
-        m_isActiveInPool = isActive;
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MysterySystems.UnitStats;
 
-public class Unit : PooledObject, ITurnTaker
+public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
 {
     // Gameplay var
     [SerializeField] GameManager m_gameManager = null;
@@ -106,9 +106,9 @@ public class Unit : PooledObject, ITurnTaker
     }
 
     // Needs to also show/hide health bar when the unit is activated in the pool.
-    public override void SetIsActiveInPool(bool isActive)
+    public void SetIsActiveInPool(bool isActive)
     {
-        base.SetIsActiveInPool(isActive);
+        gameObject.SetActive(isActive);
         m_healthBar.gameObject.SetActive(isActive);
     }
 

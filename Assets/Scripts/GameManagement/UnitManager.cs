@@ -108,7 +108,7 @@ public class UnitManager
         unit.currentTile.SetCurrentUnit(null);
         //unit.SetCurrentTile(null);
         unit.modelObject.DetachCurrentUnit(m_modelContainer);
-        m_unitPool.DeactivateObject(unit);
+        unit.SetIsActiveInPool(false);
 
         m_activeUnits.Remove(unit);
     }

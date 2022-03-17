@@ -2,9 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ModelObject : PooledObject
+public class ModelObject : MonoBehaviour, IPooledObject
 {
     Unit m_currentUnit = null;
+
+    public void SetIsActiveInPool(bool isActive)
+    {
+        gameObject.SetActive(isActive);
+    }
 
     public void SetCurrentUnit(Unit unit)
     {
