@@ -8,17 +8,17 @@ public class DebugAIController : UnitController
     {
         // Find any attack target for debug purposes
         List<Tile> validTiles = new List<Tile>();
-        Unit attackTarget = null;
+        GameMapToken attackTarget = null;
         direction = 0;
         for (int i = 0; i < 8; i++)
         {
             Tile.NeighbourDirection dir = (Tile.NeighbourDirection)i;
-            if (unit.CheckNeighbourTileMove(dir, out Tile neighbourTile))
+            if (unit.CheckNeighbourTileMove(dir, out GameMapTile neighbourTile))
             {
                 validTiles.Add(neighbourTile);
             }
 
-            attackTarget = neighbourTile.GetCurrentUnit();
+            attackTarget = neighbourTile.GetToken(TempTokenID.unit);
             if (attackTarget != null)
             {
                 direction = dir;
@@ -32,7 +32,7 @@ public class DebugAIController : UnitController
         {
             randDirInt = Random.Range(0, 8);
             Tile.NeighbourDirection randDir = (Tile.NeighbourDirection)randDirInt;
-            if (unit.CheckNeighbourTileMove(randDir, out Tile neighbourTile))
+            if (unit.CheckNeighbourTileMove(randDir, out GameMapTile neighbourTile))
             {
                 direction = randDir;
                 return TurnActions.GetTurnAction(TurnActionEnum.move);

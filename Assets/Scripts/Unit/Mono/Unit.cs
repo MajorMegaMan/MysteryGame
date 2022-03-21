@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using MysterySystems.UnitStats;
 
-public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
+public class Unit : GameMapToken, ITurnTaker, IPooledObject
 {
     // Gameplay var
     [SerializeField] GameManager m_gameManager = null;
@@ -15,6 +15,10 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
     [SerializeField] Animator m_anim = null;
+    float m_currentMoveAnimationValue = 0.0f;
+    float m_targetMoveAnimationValue = 0.0f;
+    float m_animationVelocity = 0.0f;
+    [SerializeField] float m_animationSmoothTime = 0.1f;
 
     // UI Elements
     [SerializeField] Slider m_healthBar = null;
@@ -24,27 +28,17 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     UnitController m_unitController = null;
 
     // Gameplay map var
-    Tile m_currentTile = null;
 
     // Internal State machine logic
-    Vector3 m_targetPosition = Vector3.zero;
-    [SerializeField] float m_moveSpeed = 5.0f;
-    [SerializeField] Tile.Access m_tileAccess = 0;
+    [SerializeField] GameMapTile.Access m_tileAccess = 0;
 
     Tile.NeighbourDirection m_currentLookDirection = 0;
-
-    delegate void VoidFunc();
-    VoidFunc m_moveAction = () => { };
 
     public delegate void StatsAction(UnitStats unitStats);
     StatsAction m_statChangeEvent;
 
-    bool m_isMoving = false;
-
     // getters
-    public bool isMoving { get { return m_isMoving; } }
-    public Tile currentTile { get { return m_currentTile; } }
-    public Tile.Access tileAccess { get { return m_tileAccess; } }
+    public GameMapTile.Access tileAccess { get { return m_tileAccess; } }
     public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
 
     public ModelObject modelObject { get { return m_modelObject; } }
@@ -53,6 +47,37 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     public UnitStats unitStats { get { return m_unitStats; } }
     public UnitProfile profile { get { return m_unitStats.profile; } }
     public Inventory<Unit> inventory { get { return m_inventory; } }
+
+    #region TokenMethods
+    public override int GetID()
+    {
+        return (int)TempTokenID.unit;
+    }
+
+    protected override void OnMoveBegin(TokenMover tokenMover)
+    {
+        m_targetMoveAnimationValue = 1.0f;
+    }
+
+    protected override void OnMoveArrive()
+    {
+        m_targetMoveAnimationValue = 0.0f;
+    }
+
+    public override void OnEnterTile(GameMapTile gameMapTile)
+    {
+        // Get the items on the tile.
+        var itemToken = gameMapTile.GetToken(TempTokenID.item) as ItemToken;
+        if (itemToken != null)
+        {
+            Debug.Log(itemToken.item.itemName);
+            if(m_inventory.AddItem(itemToken.item))
+            {
+                itemToken.SetIsActiveInPool(false);
+            }
+        }
+    }
+    #endregion
 
     #region UnityRelated
     // Start is called before the first frame update
@@ -64,7 +89,8 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     // Update is called once per frame
     void LateUpdate()
     {
-        m_moveAction.Invoke();
+        m_currentMoveAnimationValue = Mathf.SmoothDamp(m_currentMoveAnimationValue, m_targetMoveAnimationValue, ref m_animationVelocity, m_animationSmoothTime);
+        m_anim.SetFloat("Movement", m_currentMoveAnimationValue);
     }
 
     // Use this instantiate method to create units as this will attach all the necessary components.
@@ -113,86 +139,17 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     }
 
     #region GameMapNavigation
-    void MoveToTargetPos()
-    {
-        Vector3 toTarget = m_targetPosition - transform.position;
-        float distance = toTarget.magnitude;
-        float deltaSpeed = Time.deltaTime * m_moveSpeed;
-        if (distance < deltaSpeed)
-        {
-            transform.position = m_targetPosition;
-            m_moveAction = () => { };
-            m_isMoving = false;
-
-            m_anim.SetFloat("Movement", 0.0f);
-        }
-        else
-        {
-            transform.position += (toTarget / distance) * deltaSpeed;
-        }
-    }
-
-    void SetPosition(Vector3 position)
-    {
-        m_targetPosition = position;
-        m_moveAction = MoveToTargetPos;
-        m_isMoving = true;
-
-        m_anim.SetFloat("Movement", 1.0f);
-    }
-
-    public void SetCurrentTile(Tile target)
-    {
-        m_currentTile = target;
-        SetPosition(target.position);
-    }
-
-    public void EnterTile(Tile target)
-    {
-        m_currentTile.SetCurrentUnit(null);
-        SetCurrentTile(target);
-        m_currentTile.SetCurrentUnit(this);
-    }
-
-    public void SafeEnterTile(Tile target)
-    {
-        if(m_currentTile != null)
-        {
-            m_currentTile.SetCurrentUnit(null);
-        }
-        SetCurrentTile(target);
-        m_currentTile.SetCurrentUnit(this);
-    }
-
-    // Force moving into a tile without checking if the unit is able to
-    public void ForceMoveToNeighbourTile(Tile.NeighbourDirection direction)
-    {
-        Tile neighbour = m_currentTile.GetNeighbour(direction);
-        if(neighbour != null)
-        {
-            EnterTile(neighbour);
-        }
-    }
-
-    // Safely move to neighbour tile with a check if the unit is able before moving.
-    public void MoveToNeighbourTile(Tile.NeighbourDirection direction)
-    {
-        if(CheckNeighbourTileMove(direction, out Tile neighbourTile))
-        {
-            EnterTile(neighbourTile);
-        }
-    }
 
     // returns true if the unit is able to move into the neighbouring tile
-    public bool CheckNeighbourTileMove(Tile.NeighbourDirection direction, out Tile neighbourTile)
+    public bool CheckNeighbourTileMove(Tile.NeighbourDirection direction, out GameMapTile neighbourTile)
     {
-        neighbourTile = m_currentTile.GetNeighbour(direction);
+        neighbourTile = currentTile.GetNeighbour<GameMapTile>(direction);
         if(neighbourTile == null)
         {
             return false;
         }
 
-        if (m_tileAccess < neighbourTile.access || neighbourTile.GetCurrentUnit() != null)
+        if (m_tileAccess < neighbourTile.access || neighbourTile.GetToken(TempTokenID.unit) != null)
         {
             return false;
         }
@@ -200,7 +157,7 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
         // Check if trying to move diagonally
         if (direction > Tile.NeighbourDirection.down)
         {
-            if (CheckDiagonalAccess(m_currentTile, direction))
+            if (CheckDiagonalAccess(currentTile, direction))
             {
                 // player can move into tile
                 return true;
@@ -216,9 +173,9 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     }
 
     // returns true if player can cut corners
-    bool CheckDiagonalAccess(Tile currentTile, Tile.NeighbourDirection direction)
+    bool CheckDiagonalAccess(GameMapTile currentTile, Tile.NeighbourDirection direction)
     {
-        if (m_tileAccess > Tile.Access.partial)
+        if (m_tileAccess > GameMapTile.Access.partial)
         {
             return true;
         }
@@ -249,12 +206,12 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     }
 
     // returns true if both neighbour directions are partial
-    bool CheckPartialAccess(Tile currentTile, Tile.NeighbourDirection vertDirection, Tile.NeighbourDirection horiDirection)
+    bool CheckPartialAccess(GameMapTile currentTile, Tile.NeighbourDirection vertDirection, Tile.NeighbourDirection horiDirection)
     {
-        Tile vertNeighbour = currentTile.GetNeighbour(vertDirection);
-        Tile horiNeighbour = currentTile.GetNeighbour(horiDirection);
+        GameMapTile vertNeighbour = currentTile.GetNeighbour<GameMapTile>(vertDirection);
+        GameMapTile horiNeighbour = currentTile.GetNeighbour<GameMapTile>(horiDirection);
 
-        return vertNeighbour.access <= Tile.Access.partial && horiNeighbour.access <= Tile.Access.partial;
+        return vertNeighbour.access <= GameMapTile.Access.partial && horiNeighbour.access <= GameMapTile.Access.partial;
     }
 
     public void LookTowards(Tile.NeighbourDirection direction)
@@ -262,7 +219,7 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
         m_currentLookDirection = direction;
 
         // For now, dodgy way to get the unit to face the direction it's moving
-        Vector3 assumedNeighbourOffset = m_currentTile.GetNeighbourOffset(direction);
+        Vector3 assumedNeighbourOffset = currentTile.GetNeighbourOffset(direction);
         transform.forward = assumedNeighbourOffset;
     }
     #endregion
@@ -282,12 +239,13 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
     public void Attack(Tile.NeighbourDirection direction)
     {
         m_anim.SetTrigger("Attack");
-        Tile targetTile = m_currentTile.GetNeighbour(direction);
+        GameMapTile targetTile = currentTile.GetNeighbour<GameMapTile>(direction);
         if(targetTile != null)
         {
-            Unit targetUnit = targetTile.GetCurrentUnit();
-            if(targetUnit != null)
+            GameMapToken targetToken = targetTile.GetToken(TempTokenID.unit);
+            if(targetToken != null)
             {
+                Unit targetUnit = targetToken as Unit;
                 targetUnit.ReceiveDamage(CalcAttackDamage());
             }
         }
@@ -395,7 +353,7 @@ public class Unit : MonoBehaviour, ITurnTaker, IPooledObject
 
     bool ITurnTaker.IsEngaged()
     {
-        return m_isMoving;
+        return isMoving;
     }
 
     void ITurnTaker.EndTurn()

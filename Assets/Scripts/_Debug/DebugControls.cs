@@ -41,6 +41,44 @@ public class DebugControls : MonoBehaviour
         {
             m_gameManager.itemManager.AddItemToInventory(m_gameManager.playerUnit.inventory, TempItemID.healthPotion);
         }
+
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            var itemToken = m_gameManager.itemManager.GetItemToken(TempItemID.healthPotion);
+
+            int breakCount = 0;
+            var tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+            while(tile.GetToken(TempTokenID.item) != null)
+            {
+                tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+                breakCount++;
+                if(breakCount > 10000)
+                {
+                    return;
+                }
+            }
+            TokenManager.SetTokenToTile(itemToken, tile);
+            itemToken.SetPositionToTile();
+        }
+
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            var itemToken = m_gameManager.itemManager.GetItemToken(TempItemID.apple);
+
+            int breakCount = 0;
+            var tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+            while (tile.GetToken(TempTokenID.item) != null)
+            {
+                tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+                breakCount++;
+                if (breakCount > 10000)
+                {
+                    return;
+                }
+            }
+            TokenManager.SetTokenToTile(itemToken, tile);
+            itemToken.SetPositionToTile();
+        }
     }
 
     void ToggleInventoryPanel(bool shouldShow)

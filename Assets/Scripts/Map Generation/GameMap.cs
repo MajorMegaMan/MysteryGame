@@ -81,8 +81,8 @@ public class GameMap : MonoBehaviour
                 Vector3 startPoint = tri.GetVector3Point(verticeIndex);
                 Vector3 endPoint = tri.GetVector3Point((verticeIndex + 1) % 3);
 
-                Tile startTile = GetTile(startPoint);
-                Tile endTile = GetTile(endPoint);
+                GameMapTile startTile = GetTile(startPoint);
+                GameMapTile endTile = GetTile(endPoint);
 
                 int xDiff = Mathf.Abs(startTile.x - endTile.x);
                 int yDiff = Mathf.Abs(startTile.y - endTile.y);
@@ -100,8 +100,8 @@ public class GameMap : MonoBehaviour
         {
             if(roomConnections[i].manhattanDistance < m_mapProfile.maxPathDistance)
             {
-                Tile startTile = GetTile(roomConnections[i].start.GetCentre());
-                Tile endTile = GetTile(roomConnections[i].end.GetCentre());
+                GameMapTile startTile = GetTile(roomConnections[i].start.GetCentre());
+                GameMapTile endTile = GetTile(roomConnections[i].end.GetCentre());
                 CreatePath(startTile, endTile);
             }
         }
@@ -132,7 +132,7 @@ public class GameMap : MonoBehaviour
     void InitialiseTileGrid(Vector3 origin)
     {
         m_grid = new TileGrid(m_mapProfile.gridSize, origin);
-        m_grid.InitialiseTiles();
+        m_grid.InitialiseTiles<GameMapTile>();
     }
 
     void AssignInitialTileProfiles()
@@ -141,21 +141,20 @@ public class GameMap : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                Tile tile = m_grid.GetTile(x, y);
-                tile.SetFloorMesh(m_tileFloor);
-                tile.InitialiseProfile(m_mapProfile.tileTextureSet.initialTileProfile);
+                GameMapTile tile = GetTile(x, y);
+                tile.InitialiseFloorMesh(m_tileFloor, m_mapProfile.tileTextureSet.initialTileProfile);
             }
         }
     }
 
-    public Tile GetTile(int x, int y)
+    public GameMapTile GetTile(int x, int y)
     {
-        return m_grid.GetTile(x, y);
+        return m_grid.GetTile<GameMapTile>(x, y);
     }
 
-    public Tile GetTile(Vector3 worldPos)
+    public GameMapTile GetTile(Vector3 worldPos)
     {
-        return m_grid.GetTile(worldPos);
+        return m_grid.GetTile<GameMapTile>(worldPos);
     }
 
     void FindRandomRoom()
@@ -187,14 +186,14 @@ public class GameMap : MonoBehaviour
         {
             for (int y = startY; y < endY; y++)
             {
-                Tile preCheck = m_grid.GetTile(x, y);
+                GameMapTile preCheck = GetTile(x, y);
                 if (preCheck.access != m_mapProfile.tileTextureSet.initialTileProfile.access)
                 {
                     return true;
                 }
                 for (int i = 0; i < 8; i++)
                 {
-                    Tile neighbour = preCheck.GetNeighbour((Tile.NeighbourDirection)i);
+                    GameMapTile neighbour = preCheck.GetNeighbour<GameMapTile>((Tile.NeighbourDirection)i);
                     if (neighbour != null && neighbour.access != m_mapProfile.tileTextureSet.initialTileProfile.access)
                     {
                         return true;
@@ -225,16 +224,16 @@ public class GameMap : MonoBehaviour
         {
             for (int y = startY; y < endY; y++)
             {
-                Tile tile = m_grid.GetTile(x, y);
+                GameMapTile tile = GetTile(x, y);
                 tile.InitialiseProfile(m_mapProfile.tileTextureSet.openTileProfile);
                 room.AddTileToRoom(tile);
             }
         }
     }
 
-    void CreatePath(Tile startTile, Tile endTile)
+    void CreatePath(GameMapTile startTile, GameMapTile endTile)
     {
-        Tile currentTile = startTile;
+        GameMapTile currentTile = startTile;
         int xDiff = endTile.x - currentTile.x;
         int yDiff = endTile.y - currentTile.y;
 
@@ -245,7 +244,7 @@ public class GameMap : MonoBehaviour
             // Do something with the found Tile
             currentTile.InitialiseProfile(m_mapProfile.tileTextureSet.openTileProfile);
 
-            currentTile = currentTile.GetNeighbour(toTile);
+            currentTile = currentTile.GetNeighbour<GameMapTile>(toTile);
             xDiff = endTile.x - currentTile.x;
             yDiff = endTile.y - currentTile.y;
 

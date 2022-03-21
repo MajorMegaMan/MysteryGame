@@ -49,13 +49,18 @@ public class InventorySlot<T>
 
     public void UseItem()
     {
-        m_itemType.Use(m_owner.unitOwner);
         m_count--;
         m_onCountChange?.Invoke();
+        UseItemNoCountChange();
         if (m_count <= 0)
         {
             SetItemType(null, 0);
         }
+    }
+
+    public void UseItemNoCountChange()
+    {
+        m_itemType.Use(m_owner.unitOwner);
         m_onUse?.Invoke();
     }
 

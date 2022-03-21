@@ -61,7 +61,8 @@ public class MoveTurnAction : BaseAction
     protected override void Perform(Unit unit, ITurnTaker unitAsTurnTaker)
     {
         // can force movement as the checks have already been made in find input
-        unit.ForceMoveToNeighbourTile(unit.currentLookDirection);
+        //unit.ForceMoveToNeighbourTile(unit.currentLookDirection);
+        unit.MoveToNextTile(unit.currentTile.GetNeighbour<GameMapTile>(unit.currentLookDirection));
 
         // immediately end turn because this was a movement Action
         unitAsTurnTaker.EndTurn();

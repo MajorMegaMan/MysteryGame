@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IInventoryItem<T>
+public interface IInventoryItem<TOwnerClass>
 {
     string itemName { get; }
     int GetID();
 
     int GetMaxStackCount();
 
-    void Use(T targetUnit);
+    void Use(TOwnerClass targetOwner);
+
+    Mesh GetMesh();
+
+    Material[] GetMaterials();
 }

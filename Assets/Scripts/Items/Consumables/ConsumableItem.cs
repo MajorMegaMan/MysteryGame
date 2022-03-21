@@ -12,6 +12,9 @@ public class ConsumableItem : IInventoryItem<Unit>
     [SerializeField] ConsumableItemEffectType m_effectType = 0;
     [SerializeField] float m_useValue = 1;
 
+    [SerializeField] Mesh m_mesh = null;
+    [SerializeField] Material[] m_materials = null;
+
     public float useValue { get { return m_useValue; } }
     public ConsumableItemEffectType effectType { get { return m_effectType; } }
 
@@ -30,5 +33,15 @@ public class ConsumableItem : IInventoryItem<Unit>
     public int GetMaxStackCount()
     {
         return m_maxStackCount;
+    }
+
+    public Mesh GetMesh()
+    {
+        return m_mesh;
+    }
+
+    public Material[] GetMaterials()
+    {
+        return m_materials;
     }
 }

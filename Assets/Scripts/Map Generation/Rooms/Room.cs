@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Room
 {
-    List<Tile> m_tiles;
+    List<GameMapTile> m_tiles;
     int m_startX = 0;
     int m_startY = 0;
     int m_endX = 0;
@@ -22,14 +22,14 @@ public class Room
 
     public Room(int startX, int startY, int endX, int endY)
     {
-        m_tiles = new List<Tile>();
+        m_tiles = new List<GameMapTile>();
         m_startX = startX;
         m_startY = startY;
         m_endX = endX;
         m_endY = endY;
     }
 
-    public void AddTileToRoom(Tile tile)
+    public void AddTileToRoom(GameMapTile tile)
     {
         m_tiles.Add(tile);
         tile.SetRoom(this);
@@ -47,6 +47,11 @@ public class Room
             result += m_tiles[i].position;
         }
         return result / m_tiles.Count;
+    }
+
+    public Tile GetRandomTile()
+    {
+        return m_tiles[Random.Range(0, m_tiles.Count)];
     }
 }
 

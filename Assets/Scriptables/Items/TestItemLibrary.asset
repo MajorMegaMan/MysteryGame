@@ -18,8 +18,14 @@ MonoBehaviour:
     m_maxStackCount: 5
     m_effectType: 0
     m_useValue: 20
+    m_mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    m_materials:
+    - {fileID: 2100000, guid: 7b49a4f6637bd534e8f30bf494a75ea5, type: 2}
   - m_itemName: Apple
     m_itemID: 1
     m_maxStackCount: 5
     m_effectType: 1
     m_useValue: 20
+    m_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    m_materials:
+    - {fileID: 2100000, guid: 7b4fb6f00491a1f42b8b310a45ac5e5a, type: 2}

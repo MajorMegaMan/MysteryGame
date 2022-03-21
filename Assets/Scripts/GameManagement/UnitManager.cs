@@ -105,8 +105,8 @@ public class UnitManager
 
     public void DespawnUnit(Unit unit)
     {
-        unit.currentTile.SetCurrentUnit(null);
-        //unit.SetCurrentTile(null);
+        TokenManager.ClearToken(unit);
+
         unit.modelObject.DetachCurrentUnit(m_modelContainer);
         unit.SetIsActiveInPool(false);
 

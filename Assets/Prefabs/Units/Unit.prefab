@@ -143,14 +143,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66a9661be5bbb7f46bfccde27fe82641, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tokenMoveSpeedScale: 1
   m_gameManager: {fileID: 0}
-  m_profile: {fileID: 0}
   m_modelObject: {fileID: 0}
   m_anim: {fileID: 0}
-  m_crossFadeTime: 0.02
+  m_animationSmoothTime: 0.1
   m_healthBar: {fileID: 243468324522679747}
   m_healthBarContainer: {fileID: 5475944314491431379}
-  m_moveSpeed: 5
   m_tileAccess: 0
 --- !u!1001 &2215834590119594363
 PrefabInstance:

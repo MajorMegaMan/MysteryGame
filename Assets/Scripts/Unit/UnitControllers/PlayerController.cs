@@ -26,7 +26,7 @@ public class PlayerController : UnitController
         if (FindDirection(unit, out direction))
         {
             // test for movement
-            if (unit.CheckNeighbourTileMove(direction, out Tile neighbourTile))
+            if (unit.CheckNeighbourTileMove(direction, out GameMapTile neighbourTile))
             {
                 return TurnActions.GetTurnAction(TurnActionEnum.move);
             }

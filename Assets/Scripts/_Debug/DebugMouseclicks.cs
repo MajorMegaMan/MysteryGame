@@ -12,8 +12,8 @@ public class DebugMouseclicks : MonoBehaviour
 
     TileProfile currentProfile { get { return tileProfiles[m_currentIndex]; } }
 
-    delegate void TileAction(Tile tile);
-    TileAction m_debugLeftClick = (Tile tile) => { };
+    delegate void TileAction(GameMapTile tile);
+    TileAction m_debugLeftClick = (GameMapTile tile) => { };
 
     delegate void VoidAction();
     VoidAction m_debugRightClick = () => { };
@@ -59,7 +59,7 @@ public class DebugMouseclicks : MonoBehaviour
 
     void MouseClick(Tile tile)
     {
-        m_debugLeftClick.Invoke(tile);
+        m_debugLeftClick.Invoke(tile as GameMapTile);
     }
 
     void ClearDebugAction()
@@ -105,12 +105,12 @@ public class DebugMouseclicks : MonoBehaviour
         }
     }
 
-    void PrintTile(Tile tile)
+    void PrintTile(GameMapTile tile)
     {
         string msg = "Tile: " + tile.profile.name;
 
         msg += "== Unit: ";
-        Unit unit = tile.GetCurrentUnit();
+        GameMapToken unit = tile.GetToken(TempTokenID.unit);
         if(unit != null)
         {
             msg += unit.name;
@@ -128,7 +128,7 @@ public class DebugMouseclicks : MonoBehaviour
         
     }
 
-    void SetTileProfile(Tile tile)
+    void SetTileProfile(GameMapTile tile)
     {
         Debug.Log(tile.profile.name);
         if (tile.profile != currentProfile)

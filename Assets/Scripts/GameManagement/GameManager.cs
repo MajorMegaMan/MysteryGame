@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] UnitManager.UnitManagerPackage m_unitManagerPackage = null;
     UnitActionLog m_unitActionLog;
     ItemManager m_itemManager = null;
+    [SerializeField] ItemManager.Package m_itemManagerPackage = null;
 
     // Unit references
     Unit m_player = null;
@@ -25,6 +26,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] ItemLibrary m_itemLibrary = null;
 
     // getters
+    public GameMap gameMap { get { return m_gameMap; } }
     public TurnManager<Unit> turnManager { get { return m_turnManager; } }
     public UnitManager unitManager { get { return m_unitManager; } }
     public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
@@ -37,7 +39,7 @@ public class GameManager : MonoBehaviour
         m_unitManager = new UnitManager(this, m_unitManagerPackage);
         m_unitActionLog = new UnitActionLog();
         m_turnManager = new TurnManager<Unit>();
-        m_itemManager = new ItemManager(m_itemLibrary);
+        m_itemManager = new ItemManager(m_itemManagerPackage, m_gameMap);
         CreateControllers();
     }
 
@@ -45,7 +47,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         // Spawn units
-        Tile playerTile = m_gameMap.GetTile(m_gameMap.startRoom.GetCentre());
+        GameMapTile playerTile = m_gameMap.GetTile(m_gameMap.startRoom.GetCentre());
         m_player = SpawnUnit(UnitProfileKey.debugPlayer, UnitControllerEnum.player, playerTile);
 
         m_playerHUD.InitialiseWithPlayerUnit(m_player);
@@ -56,8 +58,8 @@ public class GameManager : MonoBehaviour
         {
             int randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
             int randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
-            Tile botTile = m_gameMap.GetTile(randX, randY);
-            while (botTile.GetCurrentUnit() != null)
+            GameMapTile botTile = m_gameMap.GetTile(randX, randY);
+            while (botTile.GetToken(TempTokenID.unit) != null)
             {
                 randX = Random.Range(m_gameMap.startRoom.startX, m_gameMap.startRoom.endX);
                 randY = Random.Range(m_gameMap.startRoom.startY, m_gameMap.startRoom.endY);
@@ -86,10 +88,10 @@ public class GameManager : MonoBehaviour
         m_turnManager.Update();
     }
 
-    public void SetInitialTile(Unit unit, Tile tile)
+    public void SetInitialTile(Unit unit, GameMapTile tile)
     {
-        unit.SafeEnterTile(tile);
-        unit.transform.position = tile.position;
+        TokenManager.SetTokenToTile(unit, tile);
+        unit.SetPositionToTile();
     }
 
     void CreateControllers()
@@ -104,7 +106,7 @@ public class GameManager : MonoBehaviour
         return UnitController.GetUnitController((int)controllerEnum);
     }
 
-    public Unit SpawnUnit(UnitProfileKey unitProfileKey, UnitControllerEnum controllerEnum, Tile tile)
+    public Unit SpawnUnit(UnitProfileKey unitProfileKey, UnitControllerEnum controllerEnum, GameMapTile tile)
     {
         Unit unit = m_unitManager.SpawnUnit(unitProfileKey);
         unit.SetUnitController(GetUnitController(controllerEnum));

@@ -53,20 +53,25 @@ public class TileGrid
 
     public void InitialiseTiles()
     {
+        InitialiseTiles<Tile>();
+    }
+
+    public void InitialiseTiles<TTileType>() where TTileType : Tile, new()
+    {
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                InitialiseTile(x, y);
+                InitialiseTile<TTileType>(x, y);
             }
         }
 
         SetNeighbours();
     }
 
-    public Tile InitialiseTile(int x, int y)
+    public Tile InitialiseTile<TTileType>(int x, int y) where TTileType : Tile, new()
     {
-        m_tiles[x, y] = new Tile(x, y, this);
+        m_tiles[x, y] = Tile.CreateNewTile<TTileType>(x, y, this);
         return m_tiles[x, y];
     }
 
@@ -83,6 +88,17 @@ public class TileGrid
         toPos /= tileSize;
 
         return GetTile((int)toPos.x, (int)toPos.z);
+    }
+
+    public TTileType GetTile<TTileType>(int x, int y) where TTileType : Tile
+    {
+        return GetTile(x, y) as TTileType;
+    }
+
+    // Maybe this'll work
+    public TTileType GetTile<TTileType>(Vector3 worldPos) where TTileType : Tile
+    {
+        return GetTile(worldPos) as TTileType;
     }
 
     void SetNeighbours()

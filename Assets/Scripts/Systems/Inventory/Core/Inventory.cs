@@ -2,27 +2,27 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory<T>
+public class Inventory<TOwnerClass>
 {
-    T m_unitOwner = default;
-    List<InventorySlot<T>> m_items;
+    TOwnerClass m_unitOwner = default;
+    List<InventorySlot<TOwnerClass>> m_items;
     int m_maxCapacity = 5;
 
     public int maxCapacity { get { return m_maxCapacity; } }
-    public T unitOwner { get { return m_unitOwner; } }
+    public TOwnerClass unitOwner { get { return m_unitOwner; } }
 
-    public Inventory(T unitOwner, int maxCapacity = 5)
+    public Inventory(TOwnerClass unitOwner, int maxCapacity = 5)
     {
         m_unitOwner = unitOwner;
         m_maxCapacity = maxCapacity;
-        m_items = new List<InventorySlot<T>>(maxCapacity);
+        m_items = new List<InventorySlot<TOwnerClass>>(maxCapacity);
         for(int i = 0; i < maxCapacity; i++)
         {
-            m_items.Add(new InventorySlot<T>(this));
+            m_items.Add(new InventorySlot<TOwnerClass>(this));
         }
     }
 
-    public bool AddItem(IInventoryItem<T> newItem)
+    public bool AddItem(IInventoryItem<TOwnerClass> newItem)
     {
         for(int i = 0; i < m_items.Count; i++)
         {
@@ -46,7 +46,7 @@ public class Inventory<T>
         return false;
     }
 
-    public InventorySlot<T> GetSlot(int index)
+    public InventorySlot<TOwnerClass> GetSlot(int index)
     {
         return m_items[index];
     }
