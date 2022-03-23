@@ -14,7 +14,7 @@ public class DebugToken : GameMapToken
         {
             targetTile = m_gameMap.startRoom.GetRandomTile() as GameMapTile;
         }
-        TokenManager.SetTokenToTile(this, targetTile);
+        MovingTokenManager.SetTokenToTile(this, targetTile);
         SetPositionToTile();
     }
 

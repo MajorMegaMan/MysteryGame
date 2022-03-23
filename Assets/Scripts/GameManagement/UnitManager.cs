@@ -105,10 +105,11 @@ public class UnitManager
 
     public void DespawnUnit(Unit unit)
     {
-        TokenManager.ClearToken(unit);
+        MovingTokenManager.ClearToken(unit);
 
+        // TO DO: need to release model object from object pool, but I can't remember how to do that
         unit.modelObject.DetachCurrentUnit(m_modelContainer);
-        unit.SetIsActiveInPool(false);
+        m_unitPool.ReleaseObject(unit);
 
         m_activeUnits.Remove(unit);
     }

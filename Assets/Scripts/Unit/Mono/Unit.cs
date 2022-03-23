@@ -70,10 +70,17 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
         var itemToken = gameMapTile.GetToken(TempTokenID.item) as ItemToken;
         if (itemToken != null)
         {
-            Debug.Log(itemToken.item.itemName);
+            // There is an item on the ground. Try to add it to the inventory
             if(m_inventory.AddItem(itemToken.item))
             {
-                itemToken.SetIsActiveInPool(false);
+                // picked up item on the ground
+                m_gameManager.turnLog.AddMessage(name + " picked up " + itemToken.item.itemName);
+                itemToken.ReleaseToken();
+            }
+            else
+            {
+                // could not pick up ground item
+                m_gameManager.turnLog.AddMessage(name + " stepped on " + itemToken.item.itemName);
             }
         }
     }
@@ -246,7 +253,8 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
             if(targetToken != null)
             {
                 Unit targetUnit = targetToken as Unit;
-                targetUnit.ReceiveDamage(CalcAttackDamage());
+                float damage = targetUnit.ReceiveDamage(CalcAttackDamage());
+                m_gameManager.turnLog.AddMessage(name + " attacked " + targetToken.name + " for " + damage + " damage.");
             }
         }
     }
@@ -298,11 +306,12 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
         return result;
     }
 
-    public void ReceiveDamage(float attackValue)
+    public float ReceiveDamage(float attackValue)
     {
         ResourceStat healthStat = m_unitStats.GetStat(ResourceStatKey.health);
 
-        healthStat.value -= CalcDamageToHealth(attackValue);
+        float damageTohealth = CalcDamageToHealth(attackValue);
+        healthStat.value -= damageTohealth;
         if(healthStat.value <= 0)
         {
             Die();
@@ -310,6 +319,7 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
 
         InvokeStatChangeEvent();
         m_healthBar.value = healthStat.value;
+        return damageTohealth;
     }
 
     public void InvokeStatChangeEvent()

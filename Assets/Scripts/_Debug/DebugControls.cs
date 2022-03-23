@@ -6,12 +6,11 @@ using TMPro;
 public class DebugControls : MonoBehaviour
 {
     [SerializeField] GameManager m_gameManager = null;
-    [SerializeField] GameObject m_inventoryPanel = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        ToggleInventoryPanel(false);
+        
     }
 
     // Update is called once per frame
@@ -26,12 +25,6 @@ public class DebugControls : MonoBehaviour
             m_gameManager.playerUnit.InvokeStatChangeEvent();
         }
 
-        if(Input.GetKeyDown(KeyCode.I))
-        {
-            // Show inventory
-            ToggleInventoryPanel(!m_inventoryPanel.activeSelf);
-        }
-
         if(Input.GetKeyDown(KeyCode.Alpha1))
         {
             m_gameManager.itemManager.AddItemToInventory(m_gameManager.playerUnit.inventory, TempItemID.apple);
@@ -44,45 +37,37 @@ public class DebugControls : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.C))
         {
-            var itemToken = m_gameManager.itemManager.GetItemToken(TempItemID.healthPotion);
-
-            int breakCount = 0;
-            var tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
-            while(tile.GetToken(TempTokenID.item) != null)
-            {
-                tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
-                breakCount++;
-                if(breakCount > 10000)
-                {
-                    return;
-                }
-            }
-            TokenManager.SetTokenToTile(itemToken, tile);
-            itemToken.SetPositionToTile();
+            SpawnItemToken(TempItemID.healthPotion);
         }
 
         if (Input.GetKeyDown(KeyCode.V))
         {
-            var itemToken = m_gameManager.itemManager.GetItemToken(TempItemID.apple);
-
-            int breakCount = 0;
-            var tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
-            while (tile.GetToken(TempTokenID.item) != null)
-            {
-                tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
-                breakCount++;
-                if (breakCount > 10000)
-                {
-                    return;
-                }
-            }
-            TokenManager.SetTokenToTile(itemToken, tile);
-            itemToken.SetPositionToTile();
+            SpawnItemToken(TempItemID.apple);
         }
     }
 
-    void ToggleInventoryPanel(bool shouldShow)
+    void SpawnItemToken(TempItemID itemID)
     {
-        m_inventoryPanel.SetActive(shouldShow);
+        var itemToken = m_gameManager.itemManager.GetItemToken(itemID);
+        if (itemToken == null)
+        {
+            // failed to find a pooled item token
+            Debug.LogWarning("Failed to find a pooled Item Token. Consider exapnding the size of the pool.");
+            return;
+        }
+
+        int breakCount = 0;
+        var tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+        while (tile.GetToken(TempTokenID.item) != null)
+        {
+            tile = m_gameManager.gameMap.startRoom.GetRandomTile() as GameMapTile;
+            breakCount++;
+            if (breakCount > 10000)
+            {
+                return;
+            }
+        }
+        MovingTokenManager.SetTokenToTile(itemToken, tile);
+        itemToken.SetPositionToTile();
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TokenManager : MonoSingletonBase<TokenManager>
+public class MovingTokenManager : MonoSingletonBase<MovingTokenManager>
 {
     List<GameMapToken> m_movingTokens = new List<GameMapToken>();
     float m_tokenSpeed = 5.0f;

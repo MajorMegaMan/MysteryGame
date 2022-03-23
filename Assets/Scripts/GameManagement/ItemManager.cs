@@ -46,6 +46,7 @@ public class ItemManager
     ItemToken InstantiateItemToken(ItemToken prefab)
     {
         ItemToken newItemToken = Object.Instantiate(prefab, m_tokenContainer);
+        newItemToken.SetItemManager(this);
         return newItemToken;
     }
 
@@ -68,6 +69,11 @@ public class ItemManager
             // all pooled objects are currently in use
             return null;
         }
+    }
+
+    public void ReleaseItemToken(ItemToken itemToken)
+    {
+        m_tokenPool.ReleaseObject(itemToken);
     }
     #endregion
 }

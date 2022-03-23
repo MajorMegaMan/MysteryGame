@@ -23,6 +23,7 @@ public class UIInventory : MonoBehaviour
             var newUISlot = Instantiate(m_UIInventorySlotPrefab, m_contentWindow);
             Vector3 localPosition = originalTransform.localPosition;
             localPosition.y -= originalTransform.rect.height * i;
+            localPosition.x += m_contentWindow.rect.width * 0.5f;
             newUISlot.transform.localPosition = localPosition;
             m_UIInventorySlotList.Add(newUISlot);
             m_UIInventorySlotList[i].SetInventorySlot(m_inventory.GetSlot(i));

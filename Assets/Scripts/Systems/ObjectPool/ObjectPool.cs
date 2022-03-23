@@ -87,6 +87,19 @@ public class GameObjectPool<T> where T : IPooledObject
         return default;
     }
 
+    public void ReleaseObject(T target)
+    {
+        // for now just search for the matching object, but there would definatley be a better way to identify where the target object is located.
+        foreach(PooledObject pooledObject in m_pooledObjects)
+        {
+            if(pooledObject.target.Equals(target))
+            {
+                pooledObject.SetIsActiveInPool(false);
+                return;
+            }
+        }
+    }
+
     void CreateGameObject(T objectPrefab)
     {
         T newObject = m_createAction.Invoke(objectPrefab);

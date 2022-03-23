@@ -69,14 +69,14 @@ public abstract class GameMapToken : MonoBehaviour, IGameMapTileSetter
         // Set Token Mover positions
         m_tokenMover.SetTiles(currentTile, targetTile);
         // Enable Token mover
-        TokenManager.instance.AddMovingToken(this);
+        MovingTokenManager.instance.AddMovingToken(this);
         // Reset current move progress
         m_currentMoveProgress = 0.0f;
         m_isMoving = true;
         OnMoveBegin(m_tokenMover);
 
         // Update currentTile and token
-        TokenManager.SetTokenToTile(this, m_tokenMover.endTile);
+        MovingTokenManager.SetTokenToTile(this, m_tokenMover.endTile);
     }
 
     // This is called by the MoveableTokenManager automatically. The user does not need to call this method.
@@ -98,7 +98,7 @@ public abstract class GameMapToken : MonoBehaviour, IGameMapTileSetter
             else
             {
                 SetPositionToTile();
-                TokenManager.instance.RemoveMovingToken(this);
+                MovingTokenManager.instance.RemoveMovingToken(this);
                 m_isMoving = false;
                 OnMoveArrive();
             }

@@ -13,6 +13,8 @@ public class PlayerHUD
     Unit m_player = null;
     [SerializeField] UIInventory m_UIInventory = null;
 
+    [SerializeField] MessageBoxEvents m_messageBoxEvents = null;
+
     public void InitialiseWithPlayerUnit(Unit player)
     {
         m_player = player;
@@ -35,5 +37,21 @@ public class PlayerHUD
         m_UIInventory.DestroyUIInventorySlots();
 
         InitialiseWithPlayerUnit(targetPlayer);
+    }
+
+    public void SetMessageBox(MessageLog messageLog)
+    {
+        m_messageBoxEvents.ClearText();
+        string[] messages = messageLog.GetMessages();
+        foreach(string msg in messages)
+        {
+            m_messageBoxEvents.ShowMessage(msg);
+        }
+        m_messageBoxEvents.AddEventsToMessageLog(messageLog);
+    }
+
+    public void RemoveMessageBox(MessageLog messageLog)
+    {
+        m_messageBoxEvents.RemoveEventsFromMessageLog(messageLog);
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ItemToken : GameMapToken, IPooledObject
 {
+    ItemManager m_itemManager = null;
+
     IInventoryItem<Unit> m_item = null;
     [SerializeField] MeshFilter m_meshFilter = null;
     [SerializeField] MeshRenderer m_meshRenderer = null;
@@ -27,12 +29,17 @@ public class ItemToken : GameMapToken, IPooledObject
         return (int)TempTokenID.item;
     }
 
-    public void SetIsActiveInPool(bool isActive)
+    public void SetItemManager(ItemManager itemManager)
+    {
+        m_itemManager = itemManager;
+    }
+
+    void IPooledObject.SetIsActiveInPool(bool isActive)
     {
         gameObject.SetActive(isActive);
         if(!isActive)
         {
-            TokenManager.ClearToken(this);
+            MovingTokenManager.ClearToken(this);
         }
     }
 
@@ -41,5 +48,11 @@ public class ItemToken : GameMapToken, IPooledObject
         m_item = item;
         m_meshFilter.mesh = mesh;
         m_meshRenderer.materials = materials;
+    }
+
+    // Releases this token from it's managed object pool
+    public void ReleaseToken()
+    {
+        m_itemManager.ReleaseItemToken(this);
     }
 }

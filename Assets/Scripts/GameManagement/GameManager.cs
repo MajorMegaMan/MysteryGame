@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     Unit[] m_debugAIUnits = null;
     [SerializeField] ItemLibrary m_itemLibrary = null;
 
+    MessageLog m_turnLog;
+
     // getters
     public GameMap gameMap { get { return m_gameMap; } }
     public TurnManager<Unit> turnManager { get { return m_turnManager; } }
@@ -32,6 +34,7 @@ public class GameManager : MonoBehaviour
     public UnitActionLog unitActionLog { get { return m_unitActionLog; } }
     public Unit playerUnit { get { return m_player; } }
     public ItemManager itemManager { get { return m_itemManager; } }
+    public MessageLog turnLog { get { return m_turnLog; } }
 
     private void Awake()
     {
@@ -41,6 +44,8 @@ public class GameManager : MonoBehaviour
         m_turnManager = new TurnManager<Unit>();
         m_itemManager = new ItemManager(m_itemManagerPackage, m_gameMap);
         CreateControllers();
+        m_turnLog = new MessageLog(5);
+        m_playerHUD.SetMessageBox(m_turnLog);
     }
 
     // Start is called before the first frame update
@@ -90,7 +95,7 @@ public class GameManager : MonoBehaviour
 
     public void SetInitialTile(Unit unit, GameMapTile tile)
     {
-        TokenManager.SetTokenToTile(unit, tile);
+        MovingTokenManager.SetTokenToTile(unit, tile);
         unit.SetPositionToTile();
     }
 
