@@ -39,7 +39,7 @@ public class ItemManager
 
     public void AddItemToInventory(Inventory<Unit> inventory, TempItemID tempItemID)
     {
-        inventory.AddItem(m_itemLibrary.GetConsumableItem(tempItemID));
+        inventory.AddItem(m_itemLibrary.GetItem(tempItemID));
     }
 
     #region ItemTokens
@@ -57,11 +57,11 @@ public class ItemManager
 
     public ItemToken GetItemToken(TempItemID itemID)
     {
-        IInventoryItem<Unit> itemType = m_itemLibrary.GetConsumableItem(itemID);
+        IInventoryItem<Unit> itemType = m_itemLibrary.GetItem(itemID);
         ItemToken itemToken = m_tokenPool.ActivateObject();
         if (itemToken != null)
         {
-            itemToken.SetAsItem(itemType, itemType.GetMesh(), itemType.GetMaterials());
+            itemToken.SetAsItem(itemType, itemType.GetTokenMesh(), itemType.GetTokenMaterials());
             return itemToken;
         }
         else

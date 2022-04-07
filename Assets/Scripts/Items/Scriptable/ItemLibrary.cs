@@ -6,9 +6,28 @@ using UnityEngine;
 public class ItemLibrary : ScriptableObject
 {
     [SerializeField] List<ConsumableItem> m_consumables = new List<ConsumableItem>();
+    [SerializeField] List<EquipmentItem> m_equipment = new List<EquipmentItem>();
 
-    public ConsumableItem GetConsumableItem(TempItemID tempItemID)
+    public IInventoryItem<Unit> GetItem(TempItemID tempItemID)
     {
-        return m_consumables[(int)tempItemID];
+        int index = (int)tempItemID;
+        if(index < m_consumables.Count)
+        {
+            return m_consumables[index];
+        }
+        else
+        {
+            index -= m_consumables.Count;
+        }
+
+        if (index < m_equipment.Count)
+        {
+            return m_equipment[index];
+        }
+        else
+        {
+            index -= m_equipment.Count;
+        }
+        return null;
     }
 }

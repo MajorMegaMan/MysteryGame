@@ -11,6 +11,7 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
     UnitStats m_unitStats = null;
     Dictionary<EOTConditionKey, UnitEndTurnCondition> m_endOfTurnConditions = new Dictionary<EOTConditionKey, UnitEndTurnCondition>();
     Inventory<Unit> m_inventory = null;
+    EquipmentInventory m_equipment = null;
 
     // Models and animation
     [SerializeField] ModelObject m_modelObject = null;
@@ -47,21 +48,24 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
     public UnitStats unitStats { get { return m_unitStats; } }
     public UnitProfile profile { get { return m_unitStats.profile; } }
     public Inventory<Unit> inventory { get { return m_inventory; } }
+    public EquipmentInventory equipment { get { return m_equipment; } }
 
     #region TokenMethods
-    public override int GetID()
+    public override int GetTokenID()
     {
         return (int)TempTokenID.unit;
     }
 
-    protected override void OnMoveBegin(TokenMover tokenMover)
+    public override void OnMoveBegin(TokenMover tokenMover)
     {
         m_targetMoveAnimationValue = 1.0f;
+        m_anim.SetFloat("Movement", m_targetMoveAnimationValue);
     }
 
-    protected override void OnMoveArrive()
+    public override void OnMoveArrive()
     {
         m_targetMoveAnimationValue = 0.0f;
+        m_anim.SetFloat("Movement", m_targetMoveAnimationValue);
     }
 
     public override void OnEnterTile(GameMapTile gameMapTile)
@@ -87,17 +91,11 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
     #endregion
 
     #region UnityRelated
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void LateUpdate()
     {
         m_currentMoveAnimationValue = Mathf.SmoothDamp(m_currentMoveAnimationValue, m_targetMoveAnimationValue, ref m_animationVelocity, m_animationSmoothTime);
-        m_anim.SetFloat("Movement", m_currentMoveAnimationValue);
+        //m_anim.SetFloat("Movement", m_currentMoveAnimationValue);
     }
 
     // Use this instantiate method to create units as this will attach all the necessary components.
@@ -105,6 +103,7 @@ public class Unit : GameMapToken, ITurnTaker, IPooledObject
     {
         Unit newUnit = Object.Instantiate(prefab, unitContainer);
         newUnit.SetGameManager(gameManager);
+        newUnit.m_equipment = new EquipmentInventory(newUnit);
         return newUnit;
     }
     #endregion

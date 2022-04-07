@@ -13,16 +13,19 @@ public class MovingTokenManager : MonoSingletonBase<MovingTokenManager>
 
     private void Update()
     {
-        // Clean up any ready to move tokens that have finished arriving at their destination
-        while (m_cleanupTokens.Count > 0)
-        {
-            m_movingTokens.Remove(m_cleanupTokens.Dequeue());
-        }
-
         // Move tokens that are moving towards their target tile.
         foreach (var movingToken in m_movingTokens)
         {
             movingToken.UpdateTransformMovement(m_tokenSpeed, Time.deltaTime * m_tokenTimeScale);
+        }
+
+        // Clean up any ready to move tokens that have finished arriving at their destination
+        while (m_cleanupTokens.Count > 0)
+        {
+            var token = m_cleanupTokens.Dequeue();
+            IGameMapTileSetter tokenTileSetter = token;
+            tokenTileSetter.ResolveTokenMove();
+            m_movingTokens.Remove(token);
         }
     }
 
@@ -53,7 +56,7 @@ public class MovingTokenManager : MonoSingletonBase<MovingTokenManager>
         var currentTile = tokenInterface.GetITile();
         if (currentTile != null)
         {
-            currentTile.ClearToken(tokenInterface.GetID());
+            currentTile.ClearToken(tokenInterface.GetTokenID());
             gameMapToken.OnExitTile(gameMapTile);
         }
 
@@ -76,7 +79,7 @@ public class MovingTokenManager : MonoSingletonBase<MovingTokenManager>
         var currentTile = gameMapToken.GetITile();
         if (currentTile != null)
         {
-            currentTile.ClearToken(gameMapToken.GetID());
+            currentTile.ClearToken(gameMapToken.GetTokenID());
         }
 
         // Set Current Tile to null

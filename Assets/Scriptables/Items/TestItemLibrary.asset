@@ -15,17 +15,30 @@ MonoBehaviour:
   m_consumables:
   - m_itemName: Health Potion
     m_itemID: 0
+    m_tokenMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    m_tokenMaterials:
+    - {fileID: 2100000, guid: c4d9c252b31bb954396e184f961668dd, type: 2}
     m_maxStackCount: 5
     m_effectType: 0
     m_useValue: 20
-    m_mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
-    m_materials:
-    - {fileID: 2100000, guid: 7b49a4f6637bd534e8f30bf494a75ea5, type: 2}
   - m_itemName: Apple
     m_itemID: 1
+    m_tokenMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+    m_tokenMaterials:
+    - {fileID: 2100000, guid: fa4cdb00fa884ef4b8076ec8ea774cf2, type: 2}
     m_maxStackCount: 5
     m_effectType: 1
     m_useValue: 20
-    m_mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
-    m_materials:
-    - {fileID: 2100000, guid: 7b4fb6f00491a1f42b8b310a45ac5e5a, type: 2}
+  m_equipment:
+  - m_itemName: Sword
+    m_itemID: 2
+    m_tokenMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    m_tokenMaterials:
+    - {fileID: 2100000, guid: a55d1f3b1e79e1d4c837a500d56486c4, type: 2}
+    m_slotKey: 2
+  - m_itemName: Sheild
+    m_itemID: 3
+    m_tokenMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+    m_tokenMaterials:
+    - {fileID: 2100000, guid: d1d6e2678a68ab741a4d2a66eed1af0a, type: 2}
+    m_slotKey: 3

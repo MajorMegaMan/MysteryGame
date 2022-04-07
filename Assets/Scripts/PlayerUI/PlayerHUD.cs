@@ -12,6 +12,7 @@ public class PlayerHUD
 
     Unit m_player = null;
     [SerializeField] UIInventory m_UIInventory = null;
+    [SerializeField] UIEquipmentInventory m_UIEquipment = null;
 
     [SerializeField] MessageBoxEvents m_messageBoxEvents = null;
 
@@ -26,6 +27,8 @@ public class PlayerHUD
 
         m_UIInventory.SetInventory(m_player.inventory);
         m_UIInventory.InstantiateUIInventorySlots();
+
+        m_UIEquipment.SetInventory(m_player.equipment);
     }
 
     public void ChangePlayerUnit(Unit targetPlayer)

@@ -33,7 +33,7 @@ public abstract class GameMapToken : MonoBehaviour, IGameMapTileSetter
         return m_currentTile;
     }
 
-    public abstract int GetID();
+    public abstract int GetTokenID();
     #endregion
 
     public void SetPositionToTile()
@@ -97,21 +97,25 @@ public abstract class GameMapToken : MonoBehaviour, IGameMapTileSetter
             }
             else
             {
-                SetPositionToTile();
                 MovingTokenManager.instance.RemoveMovingToken(this);
-                m_isMoving = false;
-                OnMoveArrive();
             }
         }
     }
 
+    void IGameMapTileSetter.ResolveTokenMove()
+    {
+        SetPositionToTile();
+        m_isMoving = false;
+        OnMoveArrive();
+    }
+
     #region UserOverrides
-    protected virtual void OnMoveBegin(TokenMover tokenMover)
+    public virtual void OnMoveBegin(TokenMover tokenMover)
     {
 
     }
 
-    protected virtual void OnMoveArrive()
+    public virtual void OnMoveArrive()
     {
 
     }

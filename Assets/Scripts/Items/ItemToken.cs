@@ -24,7 +24,7 @@ public class ItemToken : GameMapToken, IPooledObject
         
     }
 
-    public override int GetID()
+    public override int GetTokenID()
     {
         return (int)TempTokenID.item;
     }

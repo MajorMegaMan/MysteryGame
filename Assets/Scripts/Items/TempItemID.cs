@@ -4,6 +4,11 @@ using UnityEngine;
 
 public enum TempItemID
 {
+    // Consumables
     healthPotion,
-    apple
+    apple,
+
+    // Equipment
+    sword,
+    sheild
 }

@@ -44,6 +44,16 @@ public class DebugControls : MonoBehaviour
         {
             SpawnItemToken(TempItemID.apple);
         }
+
+        if (Input.GetKeyDown(KeyCode.B))
+        {
+            SpawnItemToken(TempItemID.sword);
+        }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            SpawnItemToken(TempItemID.sheild);
+        }
     }
 
     void SpawnItemToken(TempItemID itemID)

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class InventorySlot<T>
 {
-    Inventory<T> m_owner = null;
+    InventoryBase<T> m_inventoryOwner = null;
+    int m_inventoryPosition = -1;
     IInventoryItem<T> m_itemType = null;
     int m_count = 0;
 
@@ -15,10 +16,17 @@ public class InventorySlot<T>
 
     // getters
     public int count { get { return m_count; } }
+    public int inventoryPosition { get { return m_inventoryPosition; } }
 
-    public InventorySlot(Inventory<T> owner)
+    public InventorySlot(InventoryBase<T> owner, int inventoryPosition)
     {
-        m_owner = owner;
+        m_inventoryOwner = owner;
+        m_inventoryPosition = inventoryPosition;
+    }
+
+    public TInventoryType GetInventoryOwner<TInventoryType>() where TInventoryType : InventoryBase<T>
+    {
+        return m_inventoryOwner as TInventoryType;
     }
 
     public IInventoryItem<T> GetItemType()
@@ -44,23 +52,18 @@ public class InventorySlot<T>
         {
             return -1;
         }
-        return m_itemType.GetID();
+        return m_itemType.GetUniqueItemID();
     }
 
     public void UseItem()
     {
-        m_count--;
-        m_onCountChange?.Invoke();
         UseItemNoCountChange();
-        if (m_count <= 0)
-        {
-            SetItemType(null, 0);
-        }
+        DecrementCount();
     }
 
     public void UseItemNoCountChange()
     {
-        m_itemType.Use(m_owner.unitOwner);
+        m_itemType.UseAction(m_inventoryOwner.unitOwner);
         m_onUse?.Invoke();
     }
 
@@ -73,6 +76,16 @@ public class InventorySlot<T>
             return true;
         }
         return false;
+    }
+
+    public void DecrementCount()
+    {
+        m_count--;
+        m_onCountChange?.Invoke();
+        if (m_count <= 0)
+        {
+            SetItemType(null, 0);
+        }
     }
 
     public void AddOnItemTypeChange(ItemAction useAction)

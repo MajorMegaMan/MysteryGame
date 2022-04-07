@@ -34,7 +34,7 @@ public class DebugToken : GameMapToken
         }
     }
 
-    public override int GetID()
+    public override int GetTokenID()
     {
         return (int)TempTokenID.item;
     }

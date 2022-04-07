@@ -17,7 +17,9 @@ interface IGameMapTileSetter
 
     IGameMapTokenSetter GetITile();
 
-    int GetID();
+    int GetTokenID();
+
+    void ResolveTokenMove();
 }
 
 interface IGameMapTokenSetter

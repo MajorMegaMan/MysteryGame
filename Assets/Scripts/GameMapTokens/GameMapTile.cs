@@ -41,7 +41,7 @@ public class GameMapTile : Tile, IGameMapTokenSetter
 
     void IGameMapTokenSetter.SetToken(GameMapToken gameMapToken)
     {
-        m_currentTokens[gameMapToken.GetID()] = gameMapToken;
+        m_currentTokens[gameMapToken.GetTokenID()] = gameMapToken;
     }
 
     void IGameMapTokenSetter.SetToken(GameMapToken gameMapToken, int tokenID)
