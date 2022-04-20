@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public enum EOTConditionKey
 {
     hunger
@@ -24,3 +25,4 @@ public static class EndOfTurnConditionCreator
         }
     }
 }
+*/

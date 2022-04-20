@@ -6,7 +6,6 @@ public class CameraController : MonoBehaviour
 {
     Camera m_camera = null;
 
-    [SerializeField] Unit m_followTarget = null;
     Transform m_followTransform = null;
 
     [SerializeField] Vector3 m_camOffset = Vector3.zero;
@@ -28,24 +27,22 @@ public class CameraController : MonoBehaviour
         transform.position = m_followTransform.position - transform.forward * m_camDistance + m_camOffset;
     }
 
-    public void SetFollowTarget(Unit targetUnit)
+    public void SetFollowTarget(Transform target)
     {
-        m_followTarget = targetUnit;
-        if (m_followTarget != null)
+        m_followTransform = target;
+        if (m_followTransform != null)
         {
-            m_followTransform = targetUnit.transform;
             m_moveAction = SetCamera;
         }
         else
         {
-            m_followTransform = null;
             m_moveAction = () => { };
         }
     }
 
     private void OnValidate()
     {
-        SetFollowTarget(m_followTarget);
+        SetFollowTarget(m_followTransform);
     }
 
     public void AddRenderEvent(VoidAction action)

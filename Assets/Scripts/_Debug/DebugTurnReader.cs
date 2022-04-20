@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public class DebugTurnReader : MonoBehaviour
 {
     public GameManager gameManager = null;
@@ -25,3 +26,4 @@ public class DebugTurnReader : MonoBehaviour
         logs = gameManager.unitActionLog.actionLog.ToArray();
     }
 }
+*/

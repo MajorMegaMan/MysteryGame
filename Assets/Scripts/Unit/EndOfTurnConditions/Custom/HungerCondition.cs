@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MysterySystems.UnitStats;
 
+/*
 public class HungerCondition : UnitEndTurnCondition
 {
     int m_stepCount = 0;
@@ -38,3 +38,4 @@ public class HungerCondition : UnitEndTurnCondition
         }
     }
 }
+*/

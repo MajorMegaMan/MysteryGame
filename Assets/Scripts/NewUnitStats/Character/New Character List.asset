@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abc77ef7cb1dad6429873b4b577f2f9b, type: 3}
+  m_Name: New Character List
+  m_EditorClassIdentifier: 
+  m_characters:
+  - m_characterName: 
+    m_profileBase: {fileID: 11400000, guid: 80611e22cfb5aa0479f857d97f160e66, type: 2}
+    m_unitStats:
+      m_coreStats:
+        m_keyValues:
+        - key: 1
+          value:
+            m_value: 5
+        - key: 2
+          value:
+            m_value: 5
+        - key: 3
+          value:
+            m_value: 8
+      m_resourceStats:
+        m_keyValues:
+        - key: 0
+          value:
+            m_value: 200
+            m_maxValue: 200
+    m_inventory:
+      m_items:
+      - m_itemType: {fileID: 0}
+        m_count: 0
+      - m_itemType: {fileID: 0}
+        m_count: 0
+      - m_itemType: {fileID: 0}
+        m_count: 0
+      - m_itemType: {fileID: 0}
+        m_count: 0
+      - m_itemType: {fileID: 0}
+        m_count: 0
+      m_maxCapacity: 5
+    m_tileAccess: 0

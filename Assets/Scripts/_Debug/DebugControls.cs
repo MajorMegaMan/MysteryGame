@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/*
 public class DebugControls : MonoBehaviour
 {
     [SerializeField] GameManager m_gameManager = null;
@@ -81,3 +82,4 @@ public class DebugControls : MonoBehaviour
         itemToken.SetPositionToTile();
     }
 }
+*/

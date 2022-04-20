@@ -17,6 +17,16 @@ public class MessageLog
         m_messages = new Queue<string>(maxCapacity);
     }
 
+    public void SetCapacity(int maxCapacity)
+    {
+        m_maxCapacity = maxCapacity;
+        if (m_messages.Count > m_maxCapacity)
+        {
+            // Remove first message as the queue is too big
+            m_messages.Dequeue();
+        }
+    }
+
     public void AddMessage(string message)
     {
         if(m_messages.Count == m_maxCapacity)

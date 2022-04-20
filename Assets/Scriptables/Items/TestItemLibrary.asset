@@ -36,9 +36,15 @@ MonoBehaviour:
     m_tokenMaterials:
     - {fileID: 2100000, guid: a55d1f3b1e79e1d4c837a500d56486c4, type: 2}
     m_slotKey: 2
+    m_coreStatModifiers:
+    - m_key: 1
+      m_value: 2
   - m_itemName: Sheild
     m_itemID: 3
     m_tokenMesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
     m_tokenMaterials:
     - {fileID: 2100000, guid: d1d6e2678a68ab741a4d2a66eed1af0a, type: 2}
     m_slotKey: 3
+    m_coreStatModifiers:
+    - m_key: 2
+      m_value: 2

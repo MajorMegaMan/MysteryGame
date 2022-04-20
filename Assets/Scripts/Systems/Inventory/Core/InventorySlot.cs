@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InventorySlot<T>
+public class InventorySlot<TOwnerClass, TItemClass> where TItemClass : IInventoryItem<TOwnerClass>
 {
-    InventoryBase<T> m_inventoryOwner = null;
+    InventoryBase<TOwnerClass> m_inventoryOwner = null;
     int m_inventoryPosition = -1;
-    IInventoryItem<T> m_itemType = null;
+    TItemClass m_itemType = default;
     int m_count = 0;
 
     public delegate void ItemAction();
@@ -18,23 +18,23 @@ public class InventorySlot<T>
     public int count { get { return m_count; } }
     public int inventoryPosition { get { return m_inventoryPosition; } }
 
-    public InventorySlot(InventoryBase<T> owner, int inventoryPosition)
+    public InventorySlot(InventoryBase<TOwnerClass> owner, int inventoryPosition)
     {
         m_inventoryOwner = owner;
         m_inventoryPosition = inventoryPosition;
     }
 
-    public TInventoryType GetInventoryOwner<TInventoryType>() where TInventoryType : InventoryBase<T>
+    public TInventoryType GetInventoryOwner<TInventoryType>() where TInventoryType : InventoryBase<TOwnerClass>
     {
         return m_inventoryOwner as TInventoryType;
     }
 
-    public IInventoryItem<T> GetItemType()
+    public TItemClass GetItemType()
     {
         return m_itemType;
     }
 
-    public void SetItemType(IInventoryItem<T> itemType, int targetCount = 1)
+    public void SetItemType(TItemClass itemType, int targetCount = 1)
     {
         m_itemType = itemType;
         m_count = targetCount;
@@ -84,7 +84,7 @@ public class InventorySlot<T>
         m_onCountChange?.Invoke();
         if (m_count <= 0)
         {
-            SetItemType(null, 0);
+            SetItemType(default, 0);
         }
     }
 

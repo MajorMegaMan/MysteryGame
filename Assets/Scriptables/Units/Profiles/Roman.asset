@@ -32,4 +32,8 @@ MonoBehaviour:
       keyStringID: strength
       baseValue: 4
       growthValue: 2
+    - key: 2
+      keyStringID: defense
+      baseValue: 2
+      growthValue: 0
   modelObjectPrefab: {fileID: 5282838314360234417, guid: cad32c606823fcb4ba5c10e7b67f4844, type: 3}

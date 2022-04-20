@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MysterySystems.UnitStats;
 
+/*
 [System.Serializable]
 public class UIResourceBar
 {
@@ -38,3 +38,4 @@ public class UIResourceBar
         m_barFill.color = m_gradient.Evaluate(m_Slider.normalizedValue);
     }
 }
+*/

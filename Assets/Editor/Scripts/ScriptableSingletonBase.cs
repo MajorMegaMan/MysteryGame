@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-public  class ScriptableSingletonBase<T> : ScriptableObject where T : ScriptableSingletonBase<T>
+public class ScriptableSingletonBase<T> : ScriptableObject where T : ScriptableSingletonBase<T>
 {
     static T _instance = null;
     delegate T InstanceGetter();
@@ -20,7 +20,10 @@ public  class ScriptableSingletonBase<T> : ScriptableObject where T : Scriptable
     
             if (_instance == null)
             {
-                _instance = MysteryEditorUtility.Creators.CreateScriptableObject<T>(settingsPath);
+                T asset = ScriptableObject.CreateInstance<T>();
+                AssetDatabase.CreateAsset(asset, settingsPath);
+                AssetDatabase.SaveAssets();
+                _instance = asset;
             }
         }
         _instanceGetter = GetInstance;

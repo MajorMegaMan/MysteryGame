@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory<TOwnerClass> : InventoryBase<TOwnerClass>
+public class Inventory<TOwnerClass, TItemClass> : InventoryBase<TOwnerClass> where TItemClass : IInventoryItem<TOwnerClass>
 {
-    List<InventorySlot<TOwnerClass>> m_items;
+    List<InventorySlot<TOwnerClass, TItemClass>> m_items;
     int m_maxCapacity = 5;
 
     public int maxCapacity { get { return m_maxCapacity; } }
@@ -12,14 +12,14 @@ public class Inventory<TOwnerClass> : InventoryBase<TOwnerClass>
     public Inventory(TOwnerClass unitOwner, int maxCapacity = 5) : base(unitOwner)
     {
         m_maxCapacity = maxCapacity;
-        m_items = new List<InventorySlot<TOwnerClass>>(maxCapacity);
+        m_items = new List<InventorySlot<TOwnerClass, TItemClass>>(maxCapacity);
         for(int i = 0; i < maxCapacity; i++)
         {
-            m_items.Add(new InventorySlot<TOwnerClass>(this, i));
+            m_items.Add(new InventorySlot<TOwnerClass, TItemClass>(this, i));
         }
     }
 
-    public bool AddItem(IInventoryItem<TOwnerClass> newItem)
+    public bool AddItem(TItemClass newItem)
     {
         for(int i = 0; i < m_items.Count; i++)
         {
@@ -43,7 +43,7 @@ public class Inventory<TOwnerClass> : InventoryBase<TOwnerClass>
         return false;
     }
 
-    public InventorySlot<TOwnerClass> GetSlot(int index)
+    public InventorySlot<TOwnerClass, TItemClass> GetSlot(int index)
     {
         return m_items[index];
     }

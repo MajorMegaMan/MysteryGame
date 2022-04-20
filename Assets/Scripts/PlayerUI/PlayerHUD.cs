@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using MysterySystems.UnitStats;
 
+/*
 [System.Serializable]
 public class PlayerHUD
 {
@@ -14,6 +14,7 @@ public class PlayerHUD
     [SerializeField] UIInventory m_UIInventory = null;
     [SerializeField] UIEquipmentInventory m_UIEquipment = null;
 
+    MessageLog m_targetMessageLog = null;
     [SerializeField] MessageBoxEvents m_messageBoxEvents = null;
 
     public void InitialiseWithPlayerUnit(Unit player)
@@ -42,10 +43,19 @@ public class PlayerHUD
         InitialiseWithPlayerUnit(targetPlayer);
     }
 
-    public void SetMessageBox(MessageLog messageLog)
+    // Attachs a message Log to the messageBox Display
+    public void SetMessageLog(MessageLog messageLog)
     {
+        RemoveMessageBox();
+        m_targetMessageLog = messageLog;
+        if(m_targetMessageLog == null)
+        {
+            return;
+        }
+
         m_messageBoxEvents.ClearText();
         string[] messages = messageLog.GetMessages();
+
         foreach(string msg in messages)
         {
             m_messageBoxEvents.ShowMessage(msg);
@@ -53,8 +63,12 @@ public class PlayerHUD
         m_messageBoxEvents.AddEventsToMessageLog(messageLog);
     }
 
-    public void RemoveMessageBox(MessageLog messageLog)
+    public void RemoveMessageBox()
     {
-        m_messageBoxEvents.RemoveEventsFromMessageLog(messageLog);
+        if(m_targetMessageLog != null)
+        {
+            m_messageBoxEvents.RemoveEventsFromMessageLog(m_targetMessageLog);
+        }
     }
 }
+*/

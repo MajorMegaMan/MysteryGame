@@ -6,7 +6,7 @@ using TMPro;
 [System.Serializable]
 public class MessageBoxEvents
 {
-    [SerializeField] TMP_Text m_messageLogText;
+    [SerializeField] TMP_Text m_messageLogText = null;
 
     public void AddEventsToMessageLog(MessageLog messageLog)
     {

@@ -96,6 +96,12 @@ public class TurnManager<T> where T : ITurnTaker
     // Searches all units until the player is found in the turn order.
     public void FindTurnOrder()
     {
+        if(m_allUnits.Count == 0)
+        {
+            // There are no units to try to find a turn order.
+            return;
+        }
+
         while (m_turnOrder.Count < m_targetTurnOrderCount)
         {
             // Set up lists

@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using MysterySystems.UnitStats;
 
+/*
 public abstract class UnitEndTurnCondition
 {
     Unit m_targetUnit = null;
@@ -24,3 +24,4 @@ public abstract class UnitEndTurnCondition
         return EndOfTurnConditionCreator.CreateCondition(conditionKey);
     }
 }
+*/
