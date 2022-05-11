@@ -6,7 +6,7 @@ namespace NewUnitStats
 {
     public class UnitTokenStub : GameMapToken, ITurnTaker, IPooledObject
     {
-        CharacterInfo m_characterInfo = null;
+        UnitCharacterInfo m_characterInfo = null;
 
         UnitTokenController m_unitController = null;
         Tile.NeighbourDirection m_currentLookDirection = 0;
@@ -14,16 +14,17 @@ namespace NewUnitStats
         NewModelObject m_modelObject = null;
 
         public Tile.NeighbourDirection currentLookDirection { get { return m_currentLookDirection; } }
-        public CharacterInfo characterInfo { get { return m_characterInfo; } }
+        public UnitCharacterInfo characterInfo { get { return m_characterInfo; } }
 
         public void GenerateUnitFromProfile(UnitProfile unitProfile)
         {
-            m_characterInfo = new CharacterInfo(unitProfile, this);
+            m_characterInfo = new UnitCharacterInfo(unitProfile, this);
         }
 
-        public void GenerateFromCharacterInfo(CharacterInfo characterInfo)
+        public void GenerateFromCharacterInfo(UnitCharacterInfo characterInfo)
         {
             m_characterInfo = characterInfo.CreateCopy();
+            m_characterInfo.SetToken(this);
         }
 
         public void SetController(UnitTokenController controller)

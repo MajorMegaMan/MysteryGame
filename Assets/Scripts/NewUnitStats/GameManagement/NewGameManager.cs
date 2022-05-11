@@ -7,23 +7,24 @@ namespace NewUnitStats
     public class NewGameManager : MonoBehaviour
     {
         [SerializeField] GameMap m_gameMap = null;
+        [SerializeField] CameraController m_cameraController = null;
 
-        [SerializeField] NewUnitManagerPackage m_unitManagerPackage = null;
+        [SerializeField] PlayerHUD m_playerHUD = null;
 
-        [SerializeField] NewItemManagerPackage m_itemManagerPackage = null;
-
-        [SerializeField] SavedParty m_savedParty = null;
         PlayerParty m_playerParty = null;
 
+        [Header("Initialisation")]
+        [SerializeField] NewUnitManagerPackage m_unitManagerPackage = null;
+        [SerializeField] NewItemManagerPackage m_itemManagerPackage = null;
+        [SerializeField] SavedParty m_savedParty = null;
+
         [Header("Debug")]
-        [SerializeField] UnitProfile debugUnitProfile = null;
         [SerializeField] ScriptableCharacterList debugSavedCharacters = null;
         [SerializeField] Inventory.BaseItemStub debugItem = null;
 
         private void Awake()
         {
             NewUnitManager.instance.Init(m_unitManagerPackage);
-
             NewItemManager.instance.Init(m_itemManagerPackage);
 
             UnitTokenController.CreateController<PlayerTokenController>();
@@ -33,6 +34,9 @@ namespace NewUnitStats
         private void Start()
         {
             CreateParty();
+            m_cameraController.SetFollowTarget(m_playerParty.leader.token.transform);
+
+            m_playerHUD.SetPlayerUnit(m_playerParty.leader);
 
             var newItem = NewItemManager.SpawnItemToken(debugItem, m_gameMap.startRoom.GetRandomTile() as GameMapTile);
         }

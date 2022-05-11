@@ -2,45 +2,40 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using NewUnitStats;
 
-/*
 [System.Serializable]
 public class PlayerHUD
 {
     [SerializeField] UIResourceBar m_healthBar = null;
     [SerializeField] UIResourceBar m_hungerBar = null;
 
-    Unit m_player = null;
-    [SerializeField] UIInventory m_UIInventory = null;
-    [SerializeField] UIEquipmentInventory m_UIEquipment = null;
+    [System.NonSerialized] UnitCharacterInfo m_player = null;
 
     MessageLog m_targetMessageLog = null;
     [SerializeField] MessageBoxEvents m_messageBoxEvents = null;
 
-    public void InitialiseWithPlayerUnit(Unit player)
+    [SerializeField] UIInventory m_UIInventory = null;
+
+    public void SetPlayerUnit(UnitCharacterInfo targetPlayer)
     {
-        m_player = player;
+        if(m_player != null)
+        {
+            m_healthBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
+            m_hungerBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
+            m_UIInventory.DestroyUIInventorySlots();
+        }
 
-        m_healthBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
-        m_hungerBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
+        m_player = targetPlayer;
 
-        m_player.ShowHealthBar(false);
+        if (m_player != null)
+        {
+            m_healthBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
+            m_hungerBar.AttachResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
 
-        m_UIInventory.SetInventory(m_player.inventory);
-        m_UIInventory.InstantiateUIInventorySlots();
-
-        m_UIEquipment.SetInventory(m_player.equipment);
-    }
-
-    public void ChangePlayerUnit(Unit targetPlayer)
-    {
-        m_healthBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.health));
-        m_hungerBar.RemoveResourceStat(m_player.unitStats.GetStat(ResourceStatKey.hunger));
-
-        m_player.ShowHealthBar(true);
-        m_UIInventory.DestroyUIInventorySlots();
-
-        InitialiseWithPlayerUnit(targetPlayer);
+            m_UIInventory.SetInventory(m_player.inventory);
+            m_UIInventory.InstantiateUIInventorySlots();
+        }
     }
 
     // Attachs a message Log to the messageBox Display
@@ -71,4 +66,3 @@ public class PlayerHUD
         }
     }
 }
-*/

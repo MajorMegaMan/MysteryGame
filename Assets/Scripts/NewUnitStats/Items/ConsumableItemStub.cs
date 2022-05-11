@@ -8,7 +8,7 @@ namespace NewUnitStats.Inventory
     public class ConsumableItemStub : BaseItemStub
     {
         [SerializeField] int m_maxStackCount = 5;
-        public override void UseAction(CharacterInfo targetUnit)
+        public override void UseAction(UnitCharacterInfo targetUnit)
         {
 
         }

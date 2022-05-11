@@ -7,14 +7,14 @@ namespace NewUnitStats
     [CreateAssetMenu(fileName = "New Character List", menuName = "NewUnitTests/Chracter List")]
     public class ScriptableCharacterList : ScriptableObject
     {
-        [SerializeField] List<CharacterInfo> m_characters = new List<CharacterInfo>();
+        [SerializeField] List<UnitCharacterInfo> m_characters = new List<UnitCharacterInfo>();
 
-        public void AddCharacter(CharacterInfo characterInfo)
+        public void AddCharacter(UnitCharacterInfo characterInfo)
         {
             m_characters.Add(characterInfo.CreateCopy());
         }
 
-        public CharacterInfo GetCharacterInfo(int index)
+        public UnitCharacterInfo GetCharacterInfo(int index)
         {
             return m_characters[index];
         }

@@ -6,20 +6,22 @@ namespace NewUnitStats
 {
     public class PlayerParty
     {
-        List<CharacterInfo> m_partyList;
+        List<UnitCharacterInfo> m_partyList;
+
+        public UnitCharacterInfo leader { get { return m_partyList[0]; } }
 
         public PlayerParty()
         {
-            m_partyList = new List<CharacterInfo>();
+            m_partyList = new List<UnitCharacterInfo>();
         }
 
         public PlayerParty(SavedParty savedParty, GameMapTile leaderTile, NewUnitManager unitManager)
         {
-            m_partyList = new List<CharacterInfo>();
+            m_partyList = new List<UnitCharacterInfo>();
             CreateParty(savedParty, leaderTile, unitManager);
         }
 
-        public void Add(CharacterInfo characterInfo)
+        public void Add(UnitCharacterInfo characterInfo)
         {
             m_partyList.Add(characterInfo);
         }
@@ -33,7 +35,7 @@ namespace NewUnitStats
             }
 
             // Create Leader first
-            CharacterInfo leaderCharInfo = savedParty.GetPartyCharacter(0);
+            UnitCharacterInfo leaderCharInfo = savedParty.GetPartyCharacter(0);
             UnitTokenStub leaderToken = unitManager.SpawnUnit(leaderCharInfo, leaderTile);
             leaderToken.SetController(UnitTokenController.GetUnitController(0));
 
@@ -43,7 +45,7 @@ namespace NewUnitStats
             // Create the rest
             for (int i = 1; i < savedParty.PartySize(); i++)
             {
-                CharacterInfo charInfo = savedParty.GetPartyCharacter(i);
+                UnitCharacterInfo charInfo = savedParty.GetPartyCharacter(i);
                 UnitTokenStub token = unitManager.SpawnUnit(charInfo, leaderTile.GetNeighbour((Tile.NeighbourDirection)i) as GameMapTile);
                 token.SetController(UnitTokenController.GetUnitController(1));
 

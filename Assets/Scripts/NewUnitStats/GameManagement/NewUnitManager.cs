@@ -9,6 +9,11 @@ namespace NewUnitStats
         GameObjectPool<UnitTokenStub> m_unitTokens = null;
         GameObjectPool<NewModelObject> m_modelObjects = null;
 
+        NewUnitManager()
+        {
+
+        }
+
         public NewUnitManager(NewUnitManagerPackage package)
         {
             m_unitTokens = new GameObjectPool<UnitTokenStub>(package.unitTokenPrefab, package.unitTokenPoolCapacity, CreateUnitTokenStub, DestroyUnitToken);
@@ -77,7 +82,7 @@ namespace NewUnitStats
         }
 
         // Spawn unit Token based on characterInfo. This will mostly be used to load saved characters
-        public UnitTokenStub SpawnUnit(CharacterInfo character, GameMapTile tile)
+        public UnitTokenStub SpawnUnit(UnitCharacterInfo character, GameMapTile tile)
         {
             UnitTokenStub toSpawn = m_unitTokens.ActivateObject();
             if (toSpawn != null)

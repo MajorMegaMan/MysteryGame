@@ -35,7 +35,7 @@ namespace NewUnitStats
             m_partyIndices.RemoveAt(index);
         }
 
-        public CharacterInfo GetPartyCharacter(int index)
+        public UnitCharacterInfo GetPartyCharacter(int index)
         {
             return m_characterList.GetCharacterInfo(m_partyIndices[index]);
         }

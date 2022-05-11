@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace NewUnitStats.Inventory
 {
-    public abstract class BaseItemStub : ScriptableObject, IInventoryItem<CharacterInfo>
+    public abstract class BaseItemStub : ScriptableObject, IInventoryItem<UnitCharacterInfo>
     {
         [SerializeField] string m_itemName = "NewCounsumable";
         [SerializeField] TempItemID m_itemID = 0;
@@ -12,7 +12,7 @@ namespace NewUnitStats.Inventory
         [SerializeField] Mesh m_tokenMesh = null;
         [SerializeField] Material[] m_tokenMaterials = null;
 
-        public abstract void UseAction(CharacterInfo targetUnit);
+        public abstract void UseAction(UnitCharacterInfo targetUnit);
 
         public string itemName { get { return m_itemName; } }
 

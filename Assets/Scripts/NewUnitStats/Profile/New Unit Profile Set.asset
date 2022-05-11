@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d01d2b1057135f84a86211106415117e, type: 3}
   m_Name: New Unit Profile Set
   m_EditorClassIdentifier: 
-  m_chracters: []
+  m_unitProfiles: []

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using NewUnitStats;
 
-/*
-[System.Serializable]
-public class UIResourceBar
+//[System.Serializable]
+public class UIResourceBar : MonoBehaviour
 {
     [SerializeField] Slider m_Slider = null;
     [SerializeField] Image m_barFill = null;
@@ -38,4 +38,3 @@ public class UIResourceBar
         m_barFill.color = m_gradient.Evaluate(m_Slider.normalizedValue);
     }
 }
-*/
